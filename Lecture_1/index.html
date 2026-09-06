@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 1 — JavaScript Basics</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <p class="disclaimer">HTML и CSS этой страницы полностью сделаны через Claude. Сами задачи (JS-код) выполнены мною самостоятельно — фокус задач был именно на повторении JS, поэтому акцент сделан на нём.</p>
+  <h1>Lecture 1 — JavaScript Basics</h1>
+  <p class="subtitle">Разбор задач: код, решение и выводы</p>
+</header>
+
+<main>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>1. Variables and Data Types</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>let studentName = 'Kanysh'; // primitive string
+let studentAge= 21; // primitive number
+let isActive = true; // primitive boolan
+let courses = ['Math', 'History', 'English']; // reference type string array
+let address = 'Esenova 43'; // primitive string
+let phoneNumber; //this will be undefine and primitive
+
+console.log(`The name of the student is ${studentName} and type is String`);
+console.log(`The age of the student is ${studentAge} and type is Number`);
+console.log(`The active status of the student is ${isActive} and type is Boolean`);
+console.log(`The courses of the student is ${courses} and type is array`);
+console.log(`The address of the student is ${address} and type is String`);
+console.log(`The phone nuber of the student is ${phoneNumber}`);</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p><strong>What is the difference between let and const?</strong> const он не изменяемый после объявления, а let можно изменить в любое время. Const используют для того чтобы не изменить некоторые данные случайно, если точно знаешь что он не должен быть изменен.</p>
+      <p><strong>What does typeof null return?</strong> object — это исторический баг, который тянется с первой версии JS.</p>
+      <p><strong>What are JavaScript primitive types?</strong> string, number, boolean, null, undefined, bigint, symbol.</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>2. Arrays</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>let numbers = [3, 7, 2, 10, 5];
+
+console.log(numbers.map(number => number*2));
+console.log(numbers.filter(number => number > 5));
+console.log(numbers.find(number => number > 5));
+console.log(numbers.reduce((acc, num) => acc + num, 0));
+console.log(numbers.includes(10))</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>3. Arrays of Objects</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>let students = [
+    {id: 1, name: "Anna", grade: 85},
+    {id: 2, name: "John", grade: 62},
+    {id: 3, name: "Sara", grade: 91},
+    {id: 4, name: "Mike", grade: 55},
+]
+
+let goodStudents = students.filter(student => student.grade >= 70)
+console.log(goodStudents);
+
+let names = students.map(student => student.name);
+console.log(names);
+
+let  thirdId = students.filter(student => student.id === 3);
+console.log(thirdId);
+
+let highestGrade = students.reduce((max, curr) => curr.grade > max.grade ? curr : max);
+console.log(`Max grade: ${highestGrade.grade}`);
+
+let average = students.reduce((total, curr) => total + curr.grade, 0) / students.length;
+console.log(`Average grade: ${average}`);
+
+let new_students = students.map(student => ({
+    ...student, passed: student.grade >= 70
+}));
+console.log(new_students);</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p>Здесь <code>...student</code> — это копирование всех полей каждого студента в новый объект.</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>4. Objects</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>let user = {
+    id: 2912,
+    name: 'Kanysh',
+    age: 21,
+    address: {
+        city: 'Almaty',
+        street: 'Esenova',
+    }
+}
+
+console.log(`User name is: ${user.name}. His address is: ${user.address.city}, ${user.address.street}`);
+user.age = 23;
+user.email = 'kanyshomirzak@gmail.com';
+
+delete user.address.street;
+
+const { name, age } = user;
+console.log(`User age is: ${age} and name is ${name}`);
+
+const { address: { city } } = user;
+console.log(`User adress street: ${city}`)
+
+const { name: userName } = user;
+console.log(`User name is: ${userName}`);</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>5. Values and References</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>original = {name: 'Alice', score: 10}
+copy = original
+
+copy.score = 20
+console.log(original) // original also changed
+
+let newCopy = { ...original };
+newCopy.score = 0;
+console.log(original);
+
+
+user1 = {name: 'Alice', address: {city: 'Almaty'}}
+user1Copy = { ...user1 }
+user1Copy.address.city = 'Astana';
+console.log(user1); //printed Astana
+
+user1Copy2 = { ...user1, address: { ...user1.address }};
+user1Copy2.address.city = 'Shymkent';
+console.log(user1);</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p><code>copy = original</code> — <code>copy</code> ссылается на тот же объект, что и <code>original</code>, а не создаёт новый, поэтому изменение через <code>copy</code> меняет и <code>original</code>.</p>
+      <p>В <code>user1Copy</code> напечатался Astana, потому что объект <code>address</code> внутри копии — это по-прежнему тот же объект, что и в <code>user1</code> (spread делает только поверхностную копию, как в первом примере — берётся именно ссылка на вложенный объект <code>address</code>).</p>
+      <p>В <code>user1Copy2</code> использован глубокий spread — <code>{ ...user1.address }</code> — создаёт новый объект <code>address</code>, поэтому изменение <code>user1Copy2.address.city</code> уже не влияет на <code>user1</code> (была опечатка: <code>...address</code> вместо <code>...user1.address</code> — переменной <code>address</code> просто не существовало).</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>6. Functions</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>function isEvenFunction(number) {
+    return number % 2 === 0;
+}
+let isEven = (number) => number % 2 === 0;
+console.log(isEven(12312));
+console.log(isEvenFunction(12482));
+
+let getFullName = (firstName, lastName) => `${firstName} ${lastName}`;
+console.log(getFullName('Alice', 'Jhonse'));
+
+let calculatePrice = (price, quantity) => price * quantity;
+console.log(calculatePrice(12, 43));
+
+let calculateDiscont = (price, percent) => price * percent / 100;
+console.log(calculateDiscont(100, 43));
+
+let getMax = (number1, number2) => number1 >= number2 ? number1 : number2;
+console.log(getMax(100, 123));</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>7. Functions as Values</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>function add(a, b) {
+    return a + b;
+}
+function multiply(a, b) {
+    return a * b;
+}
+
+function calculate(a, b, operation) {
+    return operation(a, b);
+}
+
+console.log(calculate(5, 5, add));
+console.log(calculate(5, 5, multiply));</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p><strong>Can functions be stored in variables?</strong> Да, так как функция в конечном итоге возвращает какую-то переменную или объект. Поэтому его можно сохранить.</p>
+      <p><strong>Can functions be passed to other functions?</strong> Да, можно.</p>
+      <p><strong>What is the difference between add and add()?</strong> <code>add</code> — это ссылка на саму функцию, а <code>add()</code> — это выполнение функции.</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>8. Scope</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>const message = "global"
+console.log(message)
+function newFunction() {
+    const message = "function"
+    console.log(message)
+    if (message === "function") {
+        const message = "block"
+        console.log(message)
+        var word1 = "var word"
+        let word2 = "let word"
+        const word3 = "const word"
+    }
+}
+newFunction();
+//console.log(word1, word2, word3) здесь они не выходят так как они объявлены в function scope а это global</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p><strong>Global scope</strong> — переменная объявлена вне всех функций и блоков, доступна отовсюду в коде.</p>
+      <p><strong>Function scope</strong> — переменная видна только внутри функции, где объявлена, наружу не выходит.</p>
+      <p><strong>Block scope</strong> — переменная видна только внутри блока <code>{ }</code> (if, for, while), умирает на границе блока.</p>
+      <p><strong>var</strong> — function scope, можно переприсвоить и объявить заново, hoisting с undefined.</p>
+      <p><strong>let</strong> — block scope, можно переприсвоить, нельзя объявить заново, hoisting но TDZ.</p>
+      <p><strong>const</strong> — block scope, нельзя переприсвоить, нельзя объявить заново.</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>9. Closure</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>function createCoutner(){
+    let counter = 0;
+
+    function increment() {
+        counter++;
+        console.log(counter);
+    }
+    return increment;
+}
+
+const counter = createCoutner()
+counter()
+counter()
+const counter2 = createCoutner()
+counter2()
+counter2()
+
+
+function createAdder(value){
+    let total = value
+
+    function adderTo(val) {
+        total += val
+        console.log(total)
+        return total
+    }
+    return adderTo;
+}
+
+const adderFive = createAdder(5);
+adderFive(10)
+adderFive(20)</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p>Функция «запоминает», в каком окружении она родилась, и берёт с собой доступ к тем переменным, даже если попадёт в другое место кода.</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>10. Destructuring, Spread and Rest</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>numbers = [10, 20, 30, 40]
+const [ first, second ] = numbers;
+console.log(first, second)
+
+user = { id: 1, name: 'Anna', age: 21 }
+const { name } =user
+console.log(name);
+
+newNumbers = [ ...numbers ]
+newNumbers.push(50)
+console.log(newNumbers)
+
+newUser = { ...user }
+newUser.age = 22
+newUser.email = 'anna01@gmail.com'
+console.log(newUser)
+
+spreadedArray = [ ...numbers, ...newNumbers ]
+console.log(spreadedArray)
+
+function sum(...numbers) {
+    return numbers.reduce((sum, number) => sum + number, 0);
+}
+console.log(sum(...spreadedArray));</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p>Spread разбирает элементы на отдельные части, rest наоборот собирает отдельные элементы воедино и выводит.</p>
+    </div>
+  </section>
+
+  <section class="task" data-runnable="true">
+    <div class="task-head">
+      <h2>11. Optional Chaining and Nullish Coalescing</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>users = [
+    {name: "Anna", age: 30},
+    {name: "Brian", age: 28, address:{country: "Portugal", city: "Lissabon"}},
+    {name: "Mbappe", age: 18},
+    {name: "Mary", age: 23, address:{ country: "Russia", city: "Moskow"}},
+    {name: "Ronaldo", age: 58, address:{ country: "Kazakhstan", city: "Almaty"}},
+    {name: "Belingam", age: 19},
+    {name: "Monesy", age: 75, address:{ country: "France", city: "Paris"}},
+]
+
+users.forEach(user => {
+    console.log(user.address?.city);
+})
+
+users.forEach(user => {
+    console.log(user.address?.city ?? "City not specified");
+})</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+    <div class="notes">
+      <p>Различие <code>||</code> и <code>??</code> в том, что <code>??</code> реагирует только в том случае, если значение <code>null</code> или <code>undefined</code>, а <code>||</code> — на все falsy значения, к примеру <code>0</code>, <code>""</code>, <code>NaN</code>, <code>null</code>, <code>undefined</code>.</p>
+    </div>
+  </section>
+
+  <section class="task final" data-runnable="true">
+    <div class="task-head">
+      <h2>Final Task</h2>
+      <button class="run-btn" type="button">▶ Запустить</button>
+    </div>
+    <pre><code>students = [
+    {id: 1, name: "Sayat", age: 22, grades: [79, 77, 75, 84]},
+    {id: 2, name: "Kanysh", age: 21, grades: [97, 87, 96, 95]},
+    {id: 3, name: "Baha", age: 22, grades: [80, 74, 78, 84]},
+    {id: 4, name: "Era", age: 22, grades: [88, 85, 80, 87]},
+    {id: 5, name: "Muha", age: 21, grades: [99, 95, 98, 100]},
+]
+
+let getAverage = (grades) => grades.reduce((sum, number) => sum + number, 0) / grades.length;
+let getStudentAverage = (student) => getAverage(student.grades);
+let getStudentsAverage = (students) => {
+    let studentsGrades = students.map(student => getAverage(student.grades));
+    return studentsGrades.reduce((sum, number) => sum + number, 0) / studentsGrades.length;
+}
+
+let PASS_SCORE = 80
+console.log(getStudentsAverage(students));
+
+let getPassedStundets = (students) => students.filter(student => getStudentAverage(student) > PASS_SCORE)
+console.log(getPassedStundets(students));
+
+let getStudentNames = (students) => students.map(student => student.name);
+console.log(getStudentNames(students));
+
+let findStudent = (students, id) => students.find(student => student.id === id);
+console.log(findStudent(students, 1));
+
+let fullInformation = students.map(student => ({
+    ...student, passed: getStudentAverage(student) > PASS_SCORE,
+}));
+
+console.log(fullInformation);</code></pre>
+    <div class="output" hidden><div class="output-label">Console output</div><pre class="output-log"></pre></div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Lecture 1 — JavaScript Basics · Kanysh</p>
+</footer>
+
+<script>
+  function formatArg(arg) {
+    if (typeof arg === 'string') return arg;
+    if (arg === undefined) return 'undefined';
+    try {
+      return JSON.stringify(arg, null, 2);
+    } catch {
+      return String(arg);
+    }
+  }
+
+  document.querySelectorAll('.task[data-runnable="true"]').forEach((section) => {
+    const button = section.querySelector('.run-btn');
+    const codeEl = section.querySelector('pre > code');
+    const outputBox = section.querySelector('.output');
+    const outputLog = section.querySelector('.output-log');
+
+    button.addEventListener('click', () => {
+      const lines = [];
+      const fakeConsole = {
+        log: (...args) => lines.push(args.map(formatArg).join(' ')),
+        error: (...args) => lines.push('⚠ ' + args.map(formatArg).join(' ')),
+        warn: (...args) => lines.push('⚠ ' + args.map(formatArg).join(' ')),
+      };
+
+      const source = codeEl.textContent;
+
+      try {
+        // isolated scope per run — "console" is shadowed, everything else stays plain JS
+        const runner = new Function('console', source);
+        runner(fakeConsole);
+      } catch (err) {
+        lines.push('⚠ ' + err.message);
+      }
+
+      outputLog.textContent = lines.length ? lines.join('\n') : '(нет вывода)';
+      outputBox.hidden = false;
+      section.classList.add('ran');
+    });
+  });
+</script>
+
+</body>
+</html>
