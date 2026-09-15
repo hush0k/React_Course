@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Async Tasks Demo</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f5f1f9; color: #3d3450; padding: 24px; max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 20px; color: #5b4b7a; }
+        h2 { font-size: 16px; margin-top: 32px; color: #9b7fc2; }
+        .tasks { display: flex; gap: 16px; flex-wrap: wrap; }
+        .task-card { background: #ffffff; border: 1px solid #e3d9f0; border-radius: 10px; padding: 16px; width: 220px; box-shadow: 0 2px 6px rgba(107, 70, 140, 0.06); }
+        .task-card h3 { margin: 0 0 8px; font-size: 15px; color: #5b4b7a; }
+        .task-card p { margin: 4px 0; font-size: 13px; color: #8d80a3; }
+        .status { font-weight: bold; }
+        .status.idle { color: #b0a3c4; }
+        .status.running { color: #c99a4e; }
+        .status.Completed { color: #7fa87f; }
+        .status.Failed { color: #d08a9e; }
+        button { background: #c3aee0; color: #3d2a54; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; cursor: pointer; margin-right: 6px; margin-top: 8px; }
+        button:hover { background: #b198d4; }
+        button.secondary { background: #ebe1f5; color: #5b4b7a; }
+        .panel { background: #ffffff; border: 1px solid #e3d9f0; border-radius: 10px; padding: 16px; margin-top: 12px; box-shadow: 0 2px 6px rgba(107, 70, 140, 0.06); }
+        #log { background: #f0e9f7; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; height: 260px; overflow-y: auto; white-space: pre-wrap; color: #5b4b7a; }
+        .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+<h1>Runtime & Async — демо для домашки</h1>
+
+<h2>1. Задачи (closures)</h2>
+<div class="tasks" id="taskContainer"></div>
+
+<h2>2. Запуск всех задач — sequential vs concurrent</h2>
+<div class="panel">
+    <div class="row">
+        <button id="runSeq">Run All Sequential (await по очереди)</button>
+        <button id="runConc">Run All Concurrent (Promise.allSettled)</button>
+        <button class="secondary" id="resetAll">Reset all</button>
+    </div>
+</div>
+
+<h2>3. Event Loop Demo</h2>
+<div class="panel">
+    <p style="font-size:13px;color:#b3b8c4">
+        Сначала сам напиши в блокноте порядок, в котором по-твоему выведутся строки 1–6.
+        Потом жми кнопку и сравни с реальным результатом в логе ниже.
+    </p>
+    <button id="runLoop">Run Event Loop Demo</button>
+</div>
+
+<h2>Лог (console.log дублируется сюда же)</h2>
+<div id="log"></div>
+
+<script src="./script.js"></script>
+</body>
+</html>
