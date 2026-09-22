@@ -1,4 +1,5 @@
 import { Button } from "@/modules/Button.jsx";
+import avatar from "@/assets/avatar.jpg";
 
 export function WelcomeComponent() {
     return (
@@ -34,7 +35,7 @@ export function WelcomeComponent() {
 
             <div className={"bg-amber-200 h-[30rem] w-[25rem] rounded-t-[12.5rem]" +
                 " rounded-b-4xl border-24 border-jade-600 overflow-hidden"}>
-                <img src="src/assets/avatar.jpg" alt="avatar" className="w-full h-full object-cover "/>
+                <img src={avatar} alt="avatar" className="w-full h-full object-cover "/>
             </div>
         </div>
     )
