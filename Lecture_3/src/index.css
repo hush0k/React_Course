@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #f5fafa;
+  --color-surface-raised: #ffffff;
+  --color-surface-tint: #e2f4f3;
+  --color-sky-100: #dff1f6;
+  --color-jade-back: #e2f4f3;
+  --color-jade-500: #2bb3b1;
+  --color-jade-600: #0e7c7f;
+  --color-jade-700: #0b5f62;
+  --color-ink: #12302f;
+  --color-ink-muted: #4b6362;
+  --color-on-accent: #ffffff;
+  --color-line: #d3e5e4;
+  --color-line-strong: #7a9a99;
+
+  /* Fonts */
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-logo: "Archivo Black", "Manrope", system-ui, sans-serif;
+
+  /* Text sizes: size / line-height / weight / letter-spacing */
+  --text-display: 64px;
+  --text-display--line-height: 68px;
+  --text-display--font-weight: 800;
+  --text-display--letter-spacing: -0.02em;
+
+  --text-h1: 44px;
+  --text-h1--line-height: 52px;
+  --text-h1--font-weight: 700;
+  --text-h1--letter-spacing: -0.015em;
+
+  --text-h2: 32px;
+  --text-h2--line-height: 40px;
+  --text-h2--font-weight: 700;
+  --text-h2--letter-spacing: -0.01em;
+
+  --text-h3: 20px;
+  --text-h3--line-height: 28px;
+  --text-h3--font-weight: 700;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 30px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body: 16px;
+  --text-body--line-height: 26px;
+  --text-body--font-weight: 400;
+
+  --text-small: 14px;
+  --text-small--line-height: 22px;
+  --text-small--font-weight: 500;
+
+  --text-label: 12px;
+  --text-label--line-height: 16px;
+  --text-label--font-weight: 500;
+  --text-label--letter-spacing: 0.08em;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-hover: 0 8px 24px rgba(18, 48, 47, 0.08);
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+      padding: 20px 32px;
+  }
+}
+
+@utility text-label {
+  text-transform: uppercase;
+}

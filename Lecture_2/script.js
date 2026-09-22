@@ -23,11 +23,11 @@ function createTask(name) {
                 lastTimeMs = Math.round(performance.now() - start);
                 const willFail = Math.random() < 0.25;
                 if (willFail) {
-                    status = 'Failed';
+                    status = 'failed';
                     render();
                     reject(new Error(name + ' Failed'));
                 } else {
-                    status = 'Completed';
+                    status = 'completed';
                     render();
                     resolve(name + " Completed");
                 }
@@ -114,7 +114,10 @@ document.getElementById('runConc').onclick = async () => {
     const start = performance.now();
     const results = await Promise.allSettled(tasks.map(t => t.run()));
     results.forEach((r, i) => {
-        print('  ' + tasks[i].name + ': ' + r.status + (r.value ? ' — ' + r.value : ' — ' + r.reason.message));
+        const outcome = r.status === 'fulfilled'
+            ? ' — ' + r.value
+            : ' — ' + r.reason.message;
+        print('  ' + tasks[i].name + ': ' + r.status + outcome);
     });
     const total = Math.round(performance.now() - start);
     print('All tasks finished');
