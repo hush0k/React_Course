@@ -47,9 +47,18 @@ export function Market({players, finances, onBuy}) {
                             return (
                                 <tr key={`${player.lastName} ${player.name}`} className={"border-t border-border"}>
                                     <td className={"px-6 py-4"}>
-                                        <p className={"text-text-muted text-sm"}>{player.lastName}</p>
-                                        <p className={"text-text text-lg font-bold font-display uppercase"}>{player.name}</p>
-                                        <p className={"text-text-muted text-xs"}>{player.nation}</p>
+                                        <div className={"flex flex-row items-center space-x-4"}>
+                                            <img
+                                                src={player.imgUrl}
+                                                alt={player.name}
+                                                className={"h-12 w-12 shrink-0 rounded-full object-cover object-top bg-background-subtle border border-border"}
+                                            />
+                                            <div>
+                                                <p className={"text-text-muted text-sm"}>{player.lastName}</p>
+                                                <p className={"text-text text-lg font-bold font-display uppercase"}>{player.name}</p>
+                                                <p className={"text-text-muted text-xs"}>{player.nation}</p>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td className={"px-6 py-4"}>
                                         <p className={"text-text text-base font-bold"}>{player.club}</p>
