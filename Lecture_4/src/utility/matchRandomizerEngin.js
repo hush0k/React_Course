@@ -1,4 +1,4 @@
-function getWinChance(powerA, powerB, spread = 30) {
+function getWinChance(powerA, powerB, spread = 10) {
     return 1 / (1 + Math.pow(10, (powerB - powerA) / spread));
 }
 
