@@ -32,7 +32,7 @@ const sorts = [
             const byPosition = positionPriority.indexOf(a.position) - positionPriority.indexOf(b.position);
             if (byPosition !== 0) return byPosition;
 
-            return b.power - a.power;
+            return a.power - b.power;
         },
     },
     {id: "power", label: "Сила", compare: (a, b) => b.power - a.power},
