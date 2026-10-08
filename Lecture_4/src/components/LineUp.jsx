@@ -109,8 +109,8 @@ export function LineUp({squad, onSell, onPromote}) {
                     <div key={`${player.name}-${resetKey}`} className={activeFilter.test(player) ? "" : "hidden"}>
                         <PlayerCard
                             player={player}
-                            onSell={() => onSell(player.name)}
-                            onPromote={() => onPromote(player.name)}
+                            onSell={() => onSell(player.id)}
+                            onPromote={() => onPromote(player.id)}
                         />
                     </div>
                 ))}

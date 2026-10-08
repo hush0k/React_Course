@@ -12,6 +12,11 @@ export const teams = [
     {name: "Espanyol", imgUrl: `${import.meta.env.BASE_URL}espanyol.svg`, power: 67, stadium: "RCDE Стэдиум", played: false},
     {name: "Levante", imgUrl: `${import.meta.env.BASE_URL}levante.svg`, power: 68, stadium: "Сьюдад де Валенсия", played: false},
     {name: "Deportivo LaCoruña", imgUrl: `${import.meta.env.BASE_URL}deportivo.svg`, power: 66, stadium: "Риасор", played: false},
+    {name: "Rayo Vallecano", imgUrl: `${import.meta.env.BASE_URL}spain_rayo-vallecano.football-logos.cc.svg`, power: 70, stadium: "Эстадио де Вальекас", played: false},
+    {name: "Getafe", imgUrl: `${import.meta.env.BASE_URL}spain_getafe.football-logos.cc.svg`, power: 69, stadium: "Колисеум Альфонсо Перес", played: false},
+    {name: "Elche", imgUrl: `${import.meta.env.BASE_URL}spain_elche.football-logos.cc.svg`, power: 67, stadium: "Мартинес Валеро", played: false},
+    {name: "Málaga", imgUrl: `${import.meta.env.BASE_URL}spain_malaga.football-logos.cc.svg`, power: 65, stadium: "Ла Росаледа", played: false},
+    {name: "Racing Santander", imgUrl: `${import.meta.env.BASE_URL}spain_racing.football-logos.cc.svg`, power: 65, stadium: "Эль Сардинеро", played: false},
 ]
 
 export const players = [

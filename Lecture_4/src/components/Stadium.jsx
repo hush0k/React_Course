@@ -87,7 +87,7 @@ export function Stadium({upgrades, budget, bonuses, onUpgrade}) {
                                     text={"Улучшить"}
                                     variant={"secondary"}
                                     disabled={isMax || budget < upgrade.price}
-                                    onClick={() => onUpgrade(upgrade.name)}
+                                    onClick={() => onUpgrade(upgrade.id)}
                                 />
                             </div>
                         </div>

@@ -1,11 +1,11 @@
-function getWinChance(powerA, powerB, spread = 10) {
-    return 1 / (1 + Math.pow(10, (powerB - powerA) / spread));
-}
+    function getWinChance(powerA, powerB, spread = 10) {
+        return 1 / (1 + Math.pow(10, (powerB - powerA) / spread));
+    }
 
-function playMatch(powerOfRealTeam, enemyPower, maxDrawChance = 0.25) {
-    const pureChance = getWinChance(powerOfRealTeam, enemyPower);
+    function playMatch(powerOfRealTeam, enemyPower, maxDrawChance = 0.25) {
+        const pureChance = getWinChance(powerOfRealTeam, enemyPower);
 
-    const closeness = 1 - Math.abs(pureChance - 0.5) * 2;
+        const closeness = 1 - Math.abs(pureChance - 0.5) * 2;
     const drawChance = maxDrawChance * closeness;
 
     const realChance = (1 - drawChance) * pureChance;
