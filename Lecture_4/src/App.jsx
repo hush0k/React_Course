@@ -10,7 +10,7 @@ import { SeasonResult } from "@/components/SeasonResult.jsx";
 import { ConfirmDialog } from "@/components/ConfirmDialog.jsx";
 
 
-const API = "http://localhost:8000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 function getWeekDate(week) {
     const date = new Date(new Date().getFullYear(), 8, 5, 21, 0);
