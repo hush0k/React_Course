@@ -1,13 +1,17 @@
-import { FaFontAwesomeFlag } from "react-icons/fa";
+import { FaBolt, FaFontAwesomeFlag } from "react-icons/fa";
 import { FaCity } from "react-icons/fa";
 import { MdStadium } from "react-icons/md";
 import { IoMdPerson } from "react-icons/io";
 
-export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, transferBudget, salaryFund, salaryFundUsed, fans, fansGrowth, reputation, fanPenalty}) {
+// реальные титулы клуба до старта игры
+const BASE_CHAMPIONS_LEAGUE_TITLES = 15;
+const BASE_LALIGA_TITLES = 36;
+
+export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, transferBudget, salaryFund, salaryFundUsed, fans, fansGrowth, reputation, fanPenalty, power, trophies, position}) {
     const achievements = [
-        {number: 15, content: "Лиг Чемпионов", gold: true},
-        {number: 36, content: "титулов Ла Лиги", gold: false},
-        {number: "2-e", content: "Место в таблице", gold: false},
+        {number: BASE_CHAMPIONS_LEAGUE_TITLES + trophies.championsLeague, content: "Лиг Чемпионов", gold: true},
+        {number: BASE_LALIGA_TITLES + trophies.laliga, content: "титулов Ла Лиги", gold: false},
+        {number: position ? `${position}-е` : "—", content: "Место в таблице", gold: false},
     ]
 
     const passportData = [
@@ -46,7 +50,16 @@ export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, tr
                     </div>
                 </div>
 
-                <div>
+                <div className={"flex flex-row items-end space-x-10"}>
+                    {/* сила считается на бэкенде по основному составу */}
+                    <div className={"flex flex-col space-y-1 items-end justify-end bg-primary-800 rounded-lg px-6 py-4 border border-secondary/30"}>
+                        <div className={"flex flex-row items-center space-x-3"}>
+                            <FaBolt size={36} className={"text-secondary"}/>
+                            <h3 className={"text-8xl font-semibold text-text-inverse"}>{power === null ? "—" : Math.round(power)}</h3>
+                        </div>
+                        <p className={"text-sm text-text-inverse-muted"}>Сила клуба</p>
+                    </div>
+
                     <div className={"flex flex-row space-x-6"}>
                         {achievements.map((item) => (
                             <div key={item.content} className={"flex flex-col space-y-1 items-end justify-end"}>

@@ -104,7 +104,7 @@ export function LineUp({squad, onSell, onPromote}) {
                 </div>
             </div>
 
-            <div className={"flex flex-row flex-wrap gap-11"}>
+            <div className={"flex flex-row flex-wrap w-full justify-start gap-8/cl"}>
                 {orderedSquad.map(player => (
                     <div key={`${player.name}-${resetKey}`} className={activeFilter.test(player) ? "" : "hidden"}>
                         <PlayerCard
