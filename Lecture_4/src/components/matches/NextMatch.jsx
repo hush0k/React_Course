@@ -101,7 +101,7 @@ export function NextMatch({enemyTeam, side, competition, stage, round, leg, date
     const v = competition === "laliga" ? variants.laLiga : variants.leagueOfChampions;
 
     return (
-        <div className={`flex flex-row items-center justify-between p-10 w-full rounded-lg border ${v.card}`}>
+        <div className={`flex flex-col xl:flex-row items-center justify-between gap-8 p-6 md:p-10 w-full rounded-lg border ${v.card}`}>
             <div className={"flex flex-col space-y-2"}>
                 <p className={`uppercase font-bold text-sm px-3 py-1 tracking-wide rounded-sm ${v.badge}`}>Следующий матч</p>
                 <p className={v.title}>{competitionTitle(competition, stage, round, leg)}</p>
@@ -109,24 +109,24 @@ export function NextMatch({enemyTeam, side, competition, stage, round, leg, date
             </div>
 
             <div className={"flex flex-col items-center gap-6"}>
-                <div className={"flex flex-row space-x-10 items-center"}>
-                    <h2 className={`font-bold text-6xl w-min ${v.teamName}`}>{home.name}</h2>
-                    <div className={"flex flex-col items-center gap-2 w-20"}>
+                <div className={"flex flex-row gap-4 md:gap-10 items-center"}>
+                    <h2 className={`font-bold text-2xl md:text-4xl xl:text-6xl w-min ${v.teamName}`}>{home.name}</h2>
+                    <div className={"flex flex-col items-center gap-2 w-14 md:w-20 shrink-0"}>
                         <img src={home.imgUrl} alt="" />
                         <PowerBadge power={home.power} className={v.power}/>
                     </div>
-                    <p className={`text-5xl uppercase font-bold font-display ${v.vs}`}>VS</p>
-                    <div className={"flex flex-col items-center gap-2 w-20"}>
+                    <p className={`text-3xl md:text-5xl uppercase font-bold font-display ${v.vs}`}>VS</p>
+                    <div className={"flex flex-col items-center gap-2 w-14 md:w-20 shrink-0"}>
                         <img src={away.imgUrl} alt="" />
                         <PowerBadge power={away.power} className={v.power}/>
                     </div>
-                    <h2 className={`font-bold text-6xl w-min ${v.teamName}`}>{away.name}</h2>
+                    <h2 className={`font-bold text-2xl md:text-4xl xl:text-6xl w-min ${v.teamName}`}>{away.name}</h2>
                 </div>
                 {winChance && <WinChance chance={winChance} realOnRight={!isHome} v={v}/>}
             </div>
 
             <div className={"flex flex-col space-y-2"}>
-                <p className={`font-display font-semibold text-6xl ${v.date}`}>{date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" })}</p>
+                <p className={`font-display font-semibold text-4xl md:text-6xl ${v.date}`}>{date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" })}</p>
                 <p className={`text-sm ${v.time}`}>{date.toLocaleDateString("ru-RU", { weekday: "long" }).replace(/^./, c => c.toUpperCase())} - {date.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</p>
                 <p className={`text-sm font-semibold ${v.countdown}`}>Через {competition === "laliga" ? '5' : '3'} дней</p>
             </div>

@@ -120,7 +120,7 @@ function ObjectiveCard({objective}) {
                     <ProgressValue name={"Цель"} value={type.target(objective.target)}/>
                 </div>
 
-                <div className={"flex flex-row space-x-3"}>
+                <div className={"flex flex-col sm:flex-row gap-3"}>
                     <MoneyValue name={"Награда"} value={`+${formatMoney(objective.reward)}`} className={"text-success"}/>
                     <MoneyValue name={"Штраф"} value={`−${formatMoney(objective.penalty)}`} className={"text-danger"}/>
                 </div>
@@ -136,14 +136,14 @@ export function SeasonObjectives({objectives}) {
     const done = objectives.filter(objective => objective.status === "completed" || objective.achieved).length;
 
     return (
-        <section id={"objectives"} className={"flex flex-col space-y-8 p-20 w-full"}>
-            <div className={"flex flex-row items-end justify-between"}>
+        <section id={"objectives"} className={"container flex flex-col space-y-8 py-12 lg:py-20 w-full"}>
+            <div className={"flex flex-col md:flex-row md:items-end justify-between gap-4"}>
                 <div className={"flex flex-col space-y-1 uppercase"}>
                     <p className={"text-secondary-text font-bold text-base tracking-wide"}>задачи руководства</p>
-                    <h2 className={"text-text font-bold text-8xl"}>Цели на сезон</h2>
+                    <h2 className={"text-text font-bold text-5xl md:text-8xl"}>Цели на сезон</h2>
                 </div>
                 {objectives.length > 0 && (
-                    <p className={"flex flex-row items-center gap-2 text-4xl font-bold font-display text-text"}>
+                    <p className={"flex flex-row items-center gap-2 text-3xl md:text-4xl font-bold font-display text-text"}>
                         <FaCheckCircle className={"text-success"}/>
                         {done} / {objectives.length}
                     </p>
@@ -153,7 +153,7 @@ export function SeasonObjectives({objectives}) {
             {objectives.length === 0 ? (
                 <p className={"text-text-muted"}>Целей на этот сезон нет.</p>
             ) : (
-                <div className={"grid grid-cols-3 gap-5"}>
+                <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"}>
                     {objectives.map(objective => <ObjectiveCard key={objective.id} objective={objective}/>)}
                 </div>
             )}

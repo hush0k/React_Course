@@ -21,7 +21,7 @@ const tournaments = [
 
 export function TournamentSwitch({value, onChange}) {
     return (
-        <div className={"inline-flex self-start p-1.5 gap-1.5 rounded-xl bg-background-muted border border-border"}>
+        <div className={"flex flex-wrap max-w-full self-start p-1.5 gap-1.5 rounded-xl bg-background-muted border border-border"}>
             {tournaments.map(tournament => {
                 const isActive = tournament.id === value;
                 const v = variants[tournament.id];
@@ -32,8 +32,8 @@ export function TournamentSwitch({value, onChange}) {
                         type={"button"}
                         onClick={() => onChange(tournament.id)}
                         className={cn(
-                            "flex items-center gap-3 px-5 py-3 rounded-lg border cursor-pointer",
-                            "font-bold uppercase tracking-wide text-sm transition-all duration-200",
+                            "flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2 md:py-3 whitespace-nowrap rounded-lg border cursor-pointer",
+                            "font-bold uppercase tracking-wide text-xs md:text-sm transition-all duration-200",
                             isActive
                                 ? v.active
                                 : "border-transparent text-text-muted hover:bg-background-surface hover:text-text",

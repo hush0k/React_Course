@@ -132,7 +132,7 @@ export function PlayoffBracket({playoff}) {
 
     return (
         <div className={cn(
-            "flex flex-col rounded-lg border px-6 py-5 space-y-4 overflow-x-auto",
+            "flex flex-col rounded-lg border px-4 md:px-6 py-5 space-y-4 overflow-x-auto",
             "bg-gradient-to-br from-[#0a1a5c] via-[#001489] to-[#050b2e] border-[#2b3fa8] shadow-[0_6px_24px_rgba(0,20,137,0.35)]",
         )}>
             <div className={"flex flex-col uppercase"}>

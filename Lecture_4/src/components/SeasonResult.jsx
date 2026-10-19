@@ -11,9 +11,9 @@ export function SeasonResult({result, stats, onRestart, onClose}) {
 
     return (
         <div className={"fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"} onClick={onClose}>
-            <div className={"flex flex-col items-center space-y-5 bg-primary rounded-lg shadow-card p-10 max-w-lg w-full text-center"} onClick={event => event.stopPropagation()}>
+            <div className={"flex flex-col items-center space-y-5 bg-primary rounded-lg shadow-card p-6 md:p-10 max-w-lg w-full text-center"} onClick={event => event.stopPropagation()}>
                 <p className={"uppercase text-secondary-light font-bold text-sm tracking-widest"}>итоги сезона</p>
-                <h2 className={`font-bold font-display text-6xl uppercase ${info.className}`}>{info.label}</h2>
+                <h2 className={`font-bold font-display text-4xl md:text-6xl uppercase ${info.className}`}>{info.label}</h2>
                 <p className={"text-text-inverse-muted"}>{info.text}</p>
 
                 <div className={"flex flex-row space-x-8 text-text-inverse"}>

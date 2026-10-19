@@ -93,7 +93,7 @@ export function PlayerPage({squad, market, finance, onSell, onPromote, onBuy}) {
         return (
             <section className={"container w-full py-24 flex flex-col items-start gap-4"}>
                 <p className={"text-secondary-text font-bold text-base uppercase tracking-eyebrow"}>Профиль игрока</p>
-                <h1 className={"text-text font-bold text-6xl"}>Игрок не найден</h1>
+                <h1 className={"text-text font-bold text-4xl md:text-6xl"}>Игрок не найден</h1>
                 <p className={"text-text-secondary text-lg"}>Возможно, он был продан или ушёл с рынка.</p>
                 <Link to={"/team"}><Button text={"К команде"} icon={<FiArrowLeft />} variant={"outline"} /></Link>
             </section>
@@ -218,13 +218,13 @@ export function PlayerPage({squad, market, finance, onSell, onPromote, onBuy}) {
                         </div>
                     </StatCard>
                     <StatCard label={"Стоимость"} hint={`€ ${round(player.price / player.power)} млн за 1 ед. силы`}>
-                        <p className={"text-4xl font-display font-bold text-text"}>€ {player.price} <span className={"text-xl"}>млн</span></p>
+                        <p className={"text-3xl md:text-4xl font-display font-bold text-text"}>€ {player.price} <span className={"text-xl"}>млн</span></p>
                     </StatCard>
                     <StatCard label={"Зарплата / год"} hint={`${salaryShare}% фонда зарплат`}>
-                        <p className={"text-4xl font-display font-bold text-text"}>€ {player.salary} <span className={"text-xl"}>млн</span></p>
+                        <p className={"text-3xl md:text-4xl font-display font-bold text-text"}>€ {player.salary} <span className={"text-xl"}>млн</span></p>
                     </StatCard>
                     <StatCard label={"На позиции"} hint={`${positionNames[player.position]} · ${group?.label ?? ""}`}>
-                        <p className={"text-4xl font-display font-bold text-text"}>#{positionPlace} <span className={"text-xl text-text-muted"}>из {samePosition.length}</span></p>
+                        <p className={"text-3xl md:text-4xl font-display font-bold text-text"}>#{positionPlace} <span className={"text-xl text-text-muted"}>из {samePosition.length}</span></p>
                     </StatCard>
                 </div>
 

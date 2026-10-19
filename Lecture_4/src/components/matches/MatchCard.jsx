@@ -70,7 +70,7 @@ export function MatchCard({match}) {
     const v = match.competition === "laliga" ? variants.laLiga : variants.leagueOfChampions;
 
     return (
-        <div className={`flex flex-col space-y-2 rounded-lg border p-5 h-44 w-[20rem] shrink-0 ${v.card}`}>
+        <div className={`flex flex-col space-y-2 rounded-lg border p-5 h-44 w-[18rem] md:w-[20rem] shrink-0 ${v.card}`}>
 
             <div className={"flex flex-row justify-between items-center"}>
                 <p className={`text-sm ${v.meta}`}>{String(match.date.getDate()).padStart(2, "0")}.{String(match.date.getMonth() + 1).padStart(2, "0")} · {competitionLabel(match)}

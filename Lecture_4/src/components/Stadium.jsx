@@ -16,25 +16,25 @@ export function Stadium({upgrades, budget, bonuses, onUpgrade}) {
     }
 
     return (
-        <section id={"stadium"} className={"flex flex-col space-y-8 p-20 w-full scroll-mt-20"}>
+        <section id={"stadium"} className={"container flex flex-col space-y-8 py-12 lg:py-20 w-full scroll-mt-20"}>
             <div className={"flex flex-col space-y-1 uppercase"}>
                 <p className={"text-secondary-text font-bold text-base tracking-wide"}>инфраструктура</p>
-                <h2 className={"text-text font-bold text-8xl"}>Стадион</h2>
+                <h2 className={"text-text font-bold text-5xl md:text-8xl"}>Стадион</h2>
             </div>
 
-            <div className={"flex flex-row bg-background-surface shadow-card rounded-xl border border-border w-full overflow-hidden"}>
-                <img src={`${import.meta.env.BASE_URL}santiago.webp`} alt="Сантьяго Бернабеу" className={"w-[45%] h-[23rem] object-cover"}/>
+            <div className={"flex flex-col lg:flex-row bg-background-surface shadow-card rounded-xl border border-border w-full overflow-hidden"}>
+                <img src={`${import.meta.env.BASE_URL}santiago.webp`} alt="Сантьяго Бернабеу" className={"w-full lg:w-[45%] h-56 md:h-80 lg:h-[23rem] object-cover"}/>
 
-                <div className={"flex flex-col w-[55%] p-10 space-y-6"}>
-                    <div className={"flex flex-row items-start justify-between"}>
+                <div className={"flex flex-col w-full lg:w-[55%] p-6 md:p-10 space-y-6"}>
+                    <div className={"flex flex-row flex-wrap items-start justify-between gap-4"}>
                         <div>
-                            <h3 className={"text-text font-bold text-6xl"}>Сантьяго Бернабеу</h3>
+                            <h3 className={"text-text font-bold text-4xl md:text-6xl"}>Сантьяго Бернабеу</h3>
                             <p className={"text-text-secondary text-base"}>Пасео де ла Кастельяна, 144 · Мадрид</p>
                         </div>
                         <p className={"bg-primary text-secondary-light uppercase text-xs font-bold tracking-wide rounded-sm px-3 py-2 whitespace-nowrap"}>в собственности</p>
                     </div>
 
-                    <div className={"grid grid-cols-3 gap-x-6"}>
+                    <div className={"grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4"}>
                         {stadiumData.map((item) => (
                             <div key={item.name} className={"flex flex-col space-y-1 border-t border-border py-4"}>
                                 <p className={"text-text-muted uppercase text-xs font-bold tracking-widest"}>{item.name}</p>
@@ -45,7 +45,7 @@ export function Stadium({upgrades, budget, bonuses, onUpgrade}) {
                 </div>
             </div>
 
-            <div className={"flex flex-row items-end justify-between"}>
+            <div className={"flex flex-col md:flex-row md:items-end justify-between gap-4"}>
                 <p className={"text-text-muted uppercase text-sm font-bold tracking-widest"}>Улучшения</p>
                 <p className={"text-text-secondary text-sm"}>
                     Доход за победу: <b className={"text-text"}>× {bonuses.incomeBonus} = € {bonuses.winReward} млн</b> ·
@@ -53,7 +53,7 @@ export function Stadium({upgrades, budget, bonuses, onUpgrade}) {
                 </p>
             </div>
 
-            <div className={"grid grid-cols-4 gap-5 w-full"}>
+            <div className={"grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 w-full"}>
                 {upgrades.map((upgrade) => {
                     const isMax = upgrade.level >= upgrade.maxLevel;
                     const nextMultiplier = Math.round((upgrade.multiplier + upgrade.multiplierStep) * 100) / 100;

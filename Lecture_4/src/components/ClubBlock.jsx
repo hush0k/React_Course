@@ -40,30 +40,30 @@ export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, tr
             : "text-text-inverse-muted";
 
     return (
-        <section id={"club"} className={"bg-primary flex flex-col w-full scroll-mt-20 p-20 space-y-10"}>
-            <div className={"flex flex-row items-end justify-between"}>
+        <section id={"club"} className={"bg-primary flex flex-col w-full scroll-mt-20 px-4 py-12 md:p-12 lg:p-20 space-y-10"}>
+            <div className={"flex flex-col xl:flex-row xl:items-end justify-between gap-8"}>
                 <div className={"flex flex-col space-y-4"}>
                     <p className={"uppercase text-secondary-light font-bold text-base tracking-widest"}>профиль клуба</p>
                     <div>
-                        <h1 className={"text-text-inverse text-hero font-bold"}>real madrid cf</h1>
+                        <h1 className={"text-text-inverse text-6xl md:text-8xl lg:text-hero font-bold"}>real madrid cf</h1>
                         <p className={"text-text-inverse-muted text-base m-0 pt-1"}>Основан в 1902 · Ла Лига · "Сливочные"</p>
                     </div>
                 </div>
 
-                <div className={"flex flex-row items-end space-x-10"}>
+                <div className={"flex flex-row flex-wrap items-end gap-6 md:gap-10"}>
                     {/* сила считается на бэкенде по основному составу */}
                     <div className={"flex flex-col space-y-1 items-end justify-end bg-primary-800 rounded-lg px-6 py-4 border border-secondary/30"}>
                         <div className={"flex flex-row items-center space-x-3"}>
                             <FaBolt size={36} className={"text-secondary"}/>
-                            <h3 className={"text-8xl font-semibold text-text-inverse"}>{power === null ? "—" : Math.round(power)}</h3>
+                            <h3 className={"text-5xl md:text-8xl font-semibold text-text-inverse"}>{power === null ? "—" : Math.round(power)}</h3>
                         </div>
                         <p className={"text-sm text-text-inverse-muted"}>Сила клуба</p>
                     </div>
 
-                    <div className={"flex flex-row space-x-6"}>
+                    <div className={"flex flex-row flex-wrap gap-6"}>
                         {achievements.map((item) => (
                             <div key={item.content} className={"flex flex-col space-y-1 items-end justify-end"}>
-                                <h3 className={`text-8xl font-semibold  ${item.gold ? "text-secondary" : "text-text-inverse"}`}>{item.number}</h3>
+                                <h3 className={`text-5xl md:text-8xl font-semibold ${item.gold ? "text-secondary" : "text-text-inverse"}`}>{item.number}</h3>
                                 <p className={"text-sm text-text-inverse-muted"}>{item.content}</p>
                             </div>
                         ))}
@@ -71,8 +71,8 @@ export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, tr
                 </div>
             </div>
 
-            <div className={"flex flex-row items-stretch justify-between"}>
-                <div className={"flex flex-col space-y-6 min-h-[21rem] w-[30%] bg-primary-800 rounded-lg p-5"}>
+            <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"}>
+                <div className={"flex flex-col space-y-6 min-h-[21rem] w-full bg-primary-800 rounded-lg p-5"}>
                     <h4 className={"uppercase text-secondary-light tracking-widest text-sm font-bold"}>Паспорт клуба</h4>
                     {passportData.map((item) => (
                         <div key={item.name} className={"flex flex-row space-x-2 items-center justify-start"}>
@@ -88,11 +88,11 @@ export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, tr
 
                 </div>
 
-                <div className={"flex flex-col min-h-[21rem] w-[30%] bg-primary-800 rounded-lg p-5"}>
+                <div className={"flex flex-col min-h-[21rem] w-full bg-primary-800 rounded-lg p-5"}>
                     <h4 className={"uppercase text-secondary-light tracking-widest text-sm font-bold"}>финансы</h4>
                     <div className={"mt-5"}>
                         <p className={"text-text-inverse-muted text-sm"}>Годовой бюджет</p>
-                        <h1 className={"text-8xl text-text-inverse font-bold font-display"}>€ {annualBudgetText}</h1>
+                        <h1 className={"text-5xl md:text-7xl 2xl:text-8xl text-text-inverse font-bold font-display break-words"}>€ {annualBudgetText}</h1>
                         <p className={"text-sm font-bold text-green-300"}>Доступно € {availableBudget} млн</p>
                     </div>
 
@@ -111,11 +111,11 @@ export function ClubBlock({annualBudget, availableBudget, transferBudgetLeft, tr
                     )}
                 </div>
 
-                <div className={"flex flex-col min-h-[21rem] w-[30%] bg-primary-800 rounded-lg p-5"}>
+                <div className={"flex flex-col min-h-[21rem] w-full bg-primary-800 rounded-lg p-5"}>
                     <h4 className={"uppercase text-secondary-light tracking-widest text-sm font-bold"}>поддержка</h4>
                     <div className={"mt-5"}>
                         <p className={"text-text-inverse-muted text-sm"}>Фанаты по всему миру</p>
-                        <h1 className={"text-8xl text-text-inverse font-bold font-display"}>{Math.round(fans * 10) / 10} млн</h1>
+                        <h1 className={"text-5xl md:text-7xl 2xl:text-8xl text-text-inverse font-bold font-display break-words"}>{Math.round(fans * 10) / 10} млн</h1>
                         {/* Цвет и плюс считаем по уже округлённому числу, чтобы -0.04 → 0 был серым */}
                         <p className={`text-sm font-bold ${fansGrowthColor}`}>
                             {fansGrowthRounded > 0 ? "+" : ""}{fansGrowthRounded} млн за неделю

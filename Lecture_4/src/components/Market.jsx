@@ -139,7 +139,7 @@ export function Market({players, finances, onBuy}) {
     }
 
     return (
-        <section id={"market"} className={"flex flex-col space-y-4 p-4 sm:p-10 lg:p-20 w-full"}>
+        <section id={"market"} className={"container flex flex-col space-y-4 py-12 lg:py-20 w-full"}>
             <div className={"flex flex-col space-y-1 uppercase"}>
                 <p className={"text-secondary-text font-bold text-base tracking-wide"}>трансферный рынок · {players.length} игроков</p>
                 <h2 className={"text-text font-bold text-5xl sm:text-8xl"}>Маркет</h2>

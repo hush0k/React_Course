@@ -70,8 +70,8 @@ function SeasonCard({season}) {
     const inChampionsLeague = season.champions_league_position !== null;
 
     return (
-        <div className={"flex flex-col bg-background-surface shadow-card rounded-xl border border-border p-8 gap-6"}>
-            <div className={"flex flex-row items-center justify-between"}>
+        <div className={"flex flex-col bg-background-surface shadow-card rounded-xl border border-border p-5 md:p-8 gap-6"}>
+            <div className={"flex flex-row flex-wrap items-center justify-between gap-3"}>
                 <h3 className={"text-4xl font-bold font-display text-text uppercase"}>Сезон {season.season}</h3>
                 {status && (
                     <span className={cn("px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide", status.className)}>
@@ -80,7 +80,7 @@ function SeasonCard({season}) {
                 )}
             </div>
 
-            <div className={"flex flex-row gap-4"}>
+            <div className={"flex flex-col md:flex-row gap-4"}>
                 <TournamentResult logo={"spain_la-liga.football-logos.cc.svg"} title={"Ла Лига"} className={"bg-background border border-border text-text"}>
                     <p className={"text-2xl font-bold flex items-center gap-2"}>
                         {season.laliga_position === 1 && <FaTrophy className={"text-secondary"}/>}
@@ -109,8 +109,8 @@ function SeasonCard({season}) {
                 </TournamentResult>
             </div>
 
-            <div className={"flex flex-row gap-8"}>
-                <div className={"flex flex-col gap-2 w-80 shrink-0"}>
+            <div className={"flex flex-col lg:flex-row gap-8"}>
+                <div className={"flex flex-col gap-2 w-full lg:w-80 shrink-0"}>
                     <p className={"text-text-muted text-xs uppercase tracking-wide font-bold"}>Заработано</p>
                     <MoneyRow name={"Призовые Ла Лиги"} value={season.laliga_earnings}/>
                     <MoneyRow name={"Призовые ЛЧ"} value={season.champions_league_earnings}/>
@@ -155,13 +155,13 @@ export function ClubHistory({seasons}) {
     const totalEarned = seasons.reduce((sum, season) => sum + season.total_earnings, 0);
 
     return (
-        <section id={"history"} className={"flex flex-col space-y-8 p-20 w-full"}>
+        <section id={"history"} className={"container flex flex-col space-y-8 py-12 lg:py-20 w-full"}>
             <div className={"flex flex-col space-y-1 uppercase"}>
                 <p className={"text-secondary-text font-bold text-base tracking-wide"}>архив</p>
-                <h2 className={"text-text font-bold text-8xl"}>История клуба</h2>
+                <h2 className={"text-text font-bold text-5xl md:text-8xl"}>История клуба</h2>
             </div>
 
-            <div className={"flex flex-row gap-4"}>
+            <div className={"grid grid-cols-2 lg:grid-cols-4 gap-4"}>
                 <SummaryCard name={"Сезонов"} value={seasons.length}/>
                 <SummaryCard name={"Чемпионства Ла Лиги"} value={titles}/>
                 <SummaryCard name={"Кубки ЛЧ"} value={championsTitles} className={"text-[#001489]"}/>

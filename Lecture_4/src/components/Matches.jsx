@@ -7,10 +7,10 @@ export function Matches({upcomingMatches, date, matches, stats, seasonOver, tota
     const playedRounds = matches.filter(match => match.competition === "laliga").length;
 
     return (
-        <section id={"matches"} className={"flex flex-col p-20 space-y-10 w-full"}>
+        <section id={"matches"} className={"container flex flex-col py-12 lg:py-20 space-y-10 w-full"}>
             <div className={"flex flex-col space-y-1 uppercase"}>
                 <p className={"text-secondary-text font-bold text-base tracking-wide"}>КАЛЕНДАРЬ</p>
-                <h2 className={"text-text font-bold text-8xl"}>Матчи</h2>
+                <h2 className={"text-text font-bold text-5xl md:text-8xl"}>Матчи</h2>
             </div>
 
             {seasonOver

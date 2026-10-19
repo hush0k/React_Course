@@ -59,15 +59,15 @@ export function LineUp({squad, onSell, onPromote}) {
     const visibleCount = orderedSquad.filter(activeFilter.test).length;
 
     return(
-        <section id={"line_up"} className={"flex flex-col space-y-4 p-20"}>
+        <section id={"line_up"} className={"container flex flex-col space-y-4 py-12 lg:py-20"}>
             <div className={"flex flex-col space-y-1 uppercase"}>
                 <p className={"text-secondary-text font-bold text-base tracking-wide"}>первая команда · {squad.length} игрока</p>
-                <h2 className={"text-text font-bold text-8xl"}>Состав</h2>
+                <h2 className={"text-text font-bold text-5xl md:text-8xl"}>Состав</h2>
             </div>
 
             <div className={"flex flex-col space-y-3"}>
                 <div className={"flex flex-row flex-wrap items-center gap-2"}>
-                    <p className={"text-text-muted text-sm font-bold uppercase tracking-wide w-28"}>Фильтр</p>
+                    <p className={"text-text-muted text-sm font-bold uppercase tracking-wide w-full sm:w-28"}>Фильтр</p>
                     {filters.map(filter => (
                         <Button
                             key={filter.id}
@@ -80,7 +80,7 @@ export function LineUp({squad, onSell, onPromote}) {
                 </div>
 
                 <div className={"flex flex-row flex-wrap items-center gap-2"}>
-                    <p className={"text-text-muted text-sm font-bold uppercase tracking-wide w-28"}>Сортировка</p>
+                    <p className={"text-text-muted text-sm font-bold uppercase tracking-wide w-full sm:w-28"}>Сортировка</p>
                     {sorts.map(sort => (
                         <Button
                             key={sort.id}
@@ -98,13 +98,13 @@ export function LineUp({squad, onSell, onPromote}) {
                     />
                 </div>
 
-                <div className={"flex flex-row items-center gap-4"}>
+                <div className={"flex flex-row flex-wrap items-center gap-4"}>
                     <p className={"text-text-secondary text-sm"}>Показано: {visibleCount} из {squad.length}</p>
                     <Button text={"Сбросить отношения"} size={"sm"} variant={"outline"} onClick={() => setResetKey(k => k + 1)}/>
                 </div>
             </div>
 
-            <div className={"flex flex-row flex-wrap w-full justify-start gap-8"}>
+            <div className={"flex flex-row flex-wrap w-full justify-center sm:justify-start gap-6 md:gap-8"}>
                 {orderedSquad.map(player => (
                     <div key={`${player.id}-${resetKey}`} className={activeFilter.test(player) ? "" : "hidden"}>
                         <PlayerCard

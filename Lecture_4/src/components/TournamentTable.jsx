@@ -42,13 +42,13 @@ export function TournamentTable({standings, variant = "laLiga", qualified = 16})
     const subtitle = variant === "leagueOfChampions" ? "Общий этап" : "Чемпионат Испании";
 
     return (
-        <div className={cn("flex flex-col rounded-lg border px-6 py-5 space-y-4", v.wrapper)}>
+        <div className={cn("flex flex-col rounded-lg border px-4 md:px-6 py-5 space-y-4 overflow-x-auto", v.wrapper)}>
             <div className={"flex flex-col uppercase"}>
                 <p className={cn("text-xs font-bold tracking-wide", v.subtitle)}>{subtitle}</p>
                 <h3 className={cn("font-display font-bold text-3xl", v.title)}>{title}</h3>
             </div>
 
-            <table className={"w-full text-base"}>
+            <table className={"w-full min-w-[640px] text-base"}>
                 <thead>
                 <tr className={cn("border-b text-sm uppercase tracking-wide font-bold", v.head)}>
                     <th className={"py-3 w-10 text-left"}>№</th>

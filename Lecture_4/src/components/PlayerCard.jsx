@@ -15,7 +15,7 @@ export function PlayerCard({player, onSell, onPromote}) {
     const academy = isAcademy(player);
 
     return (
-        <div className={"flex flex-col w-72 rounded-2xl border border-border bg-background-muted"}>
+        <div className={"flex flex-col w-full max-w-80 sm:w-72 rounded-2xl border border-border bg-background-muted"}>
             <p className={`text-sm uppercase tracking-widest font-bold px-4 py-1 text-text-inverse rounded-t-2xl  ${
                 player.lineUp === "Основной состав" ? "bg-role-starter" : 
                     player.lineUp === "Игрок ротации" ? "bg-role-bench" : 

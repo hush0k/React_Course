@@ -40,10 +40,10 @@ export function HomePage({finance, upcomingMatches, date, matches, stats, standi
                 power={power}
             />
 
-            <section id={"standings"} className={"flex flex-col px-20 pb-20 space-y-6 w-full"}>
+            <section id={"standings"} className={"container flex flex-col pb-12 lg:pb-20 space-y-6 w-full"}>
                 <div className={"flex flex-col space-y-1 uppercase"}>
                     <p className={"text-secondary-text font-bold text-base tracking-wide"}>ТУРНИРЫ</p>
-                    <h2 className={"text-text font-bold text-8xl"}>Таблицы</h2>
+                    <h2 className={"text-text font-bold text-5xl md:text-8xl"}>Таблицы</h2>
                 </div>
 
                 <TournamentSwitch value={tournamentId} onChange={setTournamentId}/>
