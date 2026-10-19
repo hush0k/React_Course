@@ -17,14 +17,13 @@ const emptyForm = {
     number: "",
     salary: "0.5",
     price: "1",
-    imgUrl: "santiago.webp",
+    imgUrl: "newPlayer.png",
     training: DEFAULT_TRAINING,
 };
 
 const inputClass = "h-control w-full rounded-md border border-border-strong bg-background-surface px-3 text-text text-base outline-none focus:border-primary focus:shadow-gold";
 const labelClass = "text-text-muted text-xs font-bold uppercase tracking-wide";
 
-// опция недоступна, если с ней академия выйдет за лимит нагрузки
 function overLimit(training, currentTraining, academy) {
     if (!academy) return false;
     return getTrainingWeight(training) - getTrainingWeight(currentTraining) + academy.weightUsed > academy.weightLimit;
