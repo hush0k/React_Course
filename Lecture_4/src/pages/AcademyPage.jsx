@@ -17,7 +17,7 @@ const emptyForm = {
     number: "",
     salary: "0.5",
     price: "1",
-    imgUrl: "newPlayer.png",
+    imgUrl: "players4/newPlayer.jpg",
     training: DEFAULT_TRAINING,
 };
 
