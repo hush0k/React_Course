@@ -6,6 +6,7 @@ export function Header({season, week, weekIncrement, onNextSeason, seasonOver, f
     const links = [
         {to: "/", title: "Клуб"},
         {to: "/team", title: "Команда"},
+        {to: "/academy", title: "Академия"},
         {to: "/stadium", title: "Стадион"},
         {to: "/market", title: "Маркет"},
         {to: "/history", title: "История"},

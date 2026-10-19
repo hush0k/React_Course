@@ -1,16 +1,68 @@
-# React + Vite
+# Football Club Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Одностраничное приложение (SPA) для управления футбольным клубом. Пользователь играет за клуб: управляет составом, покупает и продаёт игроков, развивает академию и стадион, проводит сезон в Ла Лиге и Лиге чемпионов.
 
-Currently, two official plugins are available:
+Демо: https://hush0k.github.io/React_Course/lecture4/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Возможности
 
-## React Compiler
+- Главная страница: следующий матч и шансы на победу, последние результаты, турнирные таблицы Ла Лиги и Лиги чемпионов, сетка плей-офф, задачи сезона, трофеи.
+- Команда: состав с фильтрами по статусу и позиции, сортировкой, продажей игроков и сменой статуса; тренерский штаб.
+- Страница игрока (`/player/:id`): подробная информация, характеристики, действия с игроком.
+- Трансферный рынок: поиск, фильтры, сортировка и пагинация на стороне сервера.
+- Академия: создание воспитанника через форму, выбор тренировок с учётом лимита нагрузки, перевод в основной состав.
+- Стадион: улучшения инфраструктуры.
+- История: итоги прошлых сезонов.
+- Смена недель и сезонов, увольнение при провале задач сезона, перезапуск игры.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Стек
 
-## Expanding the ESLint configuration
+- React 19
+- React Router 7 (HashRouter)
+- Vite
+- Tailwind CSS 4
+- ESLint
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Запуск
+
+Требуется Node.js 20 или новее.
+
+```
+npm install
+npm run dev
+```
+
+По умолчанию приложение обращается к API по адресу `http://localhost:8000`. Другой адрес задаётся переменной окружения `VITE_API_URL`, например в файле `.env.local`:
+
+```
+VITE_API_URL=http://localhost:8000
+```
+
+Для production-сборки адрес берётся из `.env.production`.
+
+## Сборка и деплой
+
+```
+npm run build     # сборка в папку dist
+npm run preview   # локальный просмотр сборки
+npm run lint      # проверка ESLint
+npm run deploy    # сборка и публикация на GitHub Pages
+```
+
+## Структура
+
+```
+src/
+  api/          запросы к серверу и преобразование данных
+  components/   переиспользуемые компоненты
+  lib/          справочники и вспомогательные функции
+  pages/        страницы приложения
+  App.jsx       маршруты и общее состояние игры
+  main.jsx      точка входа
+```
+
+## Сервер
+
+Бэкенд написан на FastAPI и находится в отдельном репозитории. Production API: https://football-club-backend-livo.onrender.com
+
+Бесплатный сервер на Render засыпает без запросов, поэтому первая загрузка может занять до минуты.

@@ -15,7 +15,8 @@ function toPlayer(player) {
         ...player,
         lastName: player.last_name,
         lineUp: player.line_up,
-        imgUrl: `${import.meta.env.BASE_URL}${player.img_url}`,
+        // у воспитанников фото может не быть — тогда карточки показывают инициалы
+        imgUrl: player.img_url ? `${import.meta.env.BASE_URL}${player.img_url}` : null,
     };
 }
 
@@ -167,17 +168,9 @@ async function getJson(url) {
     return response.json();
 }
 
+// POST-запрос; ошибку бэка возвращает текстом, чтобы показать её в попапе
 export async function post(url, body) {
-    const response = await fetch(`${API}${url}`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: body ? JSON.stringify(body) : undefined,
-    });
-    if (!response.ok) {
-        const error = await response.json();
-        alert(error.detail);
-    }
-    return response.ok;
+    return request(url, "POST", body);
 }
 
 export async function fetchAll() {
@@ -202,6 +195,12 @@ export async function fetchAll() {
         enemy: toTeam(match.enemy),
         winChance: powerData ? await getJson(`/game-engine/win-chance/${match.enemy.id}`) : null,
     })));
+
+    // без этих данных приложение не может работать — App покажет экран ошибки
+    if (!financeData || !squadData || !marketData || !staffData || !clubsData || !upgradesData
+        || !standingsData || !laligaSchedule || !championsSchedule) {
+        throw new Error("Не удалось загрузить данные с сервера");
+    }
 
     const clubs = clubsData.map(toTeam);
     const ownClub = standingsData.find(row => row.is_own_club);
@@ -237,4 +236,74 @@ export async function fetchAll() {
 // итоги завершённых сезонов, новые сверху, вместе с задачами сезона
 export async function fetchSeasonHistory() {
     return (await getJson("/season/history")) ?? [];
+}
+
+// страница маркета/состава с фильтрами, сортировкой и пагинацией на бэке;
+// общее число найденных бэк отдаёт в заголовке X-Total-Count
+export async function fetchPlayers(params) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== false) query.append(key, value);
+    });
+
+    const response = await fetch(`${API}/player?${query}`);
+    if (!response.ok) return {players: [], total: 0};
+
+    const total = response.headers.get("X-Total-Count");
+    const players = (await response.json()).map(toPlayer);
+    return {players, total: total === null ? null : Number(total)};
+}
+
+// запрос, который возвращает ошибку бэка как есть (detail из 409/422)
+async function request(url, method, body) {
+    let response;
+    try {
+        response = await fetch(`${API}${url}`, {
+            method,
+            headers: {"Content-Type": "application/json"},
+            body: body ? JSON.stringify(body) : undefined,
+        });
+    } catch {
+        return {ok: false, data: null, error: "Сервер недоступен. Проверьте подключение"};
+    }
+    const data = await response.json().catch(() => null);
+    if (response.ok) return {ok: true, data, error: null};
+    return {ok: false, data: null, error: formatError(data?.detail)};
+}
+
+function formatError(detail) {
+    if (!detail) return "Не удалось выполнить запрос";
+    if (typeof detail === "string") return detail;
+    // 422 от FastAPI — список ошибок по полям
+    if (Array.isArray(detail)) return detail.map(item => item.msg).join("; ");
+    return JSON.stringify(detail);
+}
+
+// академия: нагрузка и воспитанники (отсортированы по силе)
+export async function fetchAcademy() {
+    const data = await getJson("/player/academy");
+    if (!data) return null;
+    return {
+        weightUsed: data.weight_used,
+        weightLimit: data.weight_limit,
+        players: data.players.map(toPlayer),
+    };
+}
+
+export async function createPlayer(body) {
+    const result = await request("/player", "POST", body);
+    return result.ok ? {...result, data: toPlayer(result.data)} : result;
+}
+
+export async function setTraining(id, training) {
+    return request(`/player/${id}/training`, "PATCH", {training});
+}
+
+export async function promote(id) {
+    return request(`/player/${id}/promote`, "POST");
+}
+
+// тур сезона: в ответе результаты матчей и прогресс тренировок академии
+export async function playRound(date) {
+    return request("/season/round", "POST", {date});
 }

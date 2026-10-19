@@ -1,40 +1,18 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/Button.jsx";
+import { getNationCode, isAcademy } from "@/lib/players.js";
 
 export function PlayerCard({player, onSell, onPromote}) {
     const initialRelationship = player.relationship ?? 50;
     const [relationship, setRelationship] = useState(initialRelationship);
 
-    console.log("render PlayerCard", player.name);
-
-    const nationCodes = {
-        "Англия": "ENG",
-        "Бельгия": "BEL",
-        "Бразилия": "BRA",
-        "Германия": "GER",
-        "Испания": "ESP",
-        "Кот-д'Ивуар": "CIV",
-        "Марокко": "MAR",
-        "Нидерланды": "NED",
-        "Португалия": "POR",
-        "Турция": "TUR",
-        "Украина": "UKR",
-        "Уругвай": "URU",
-        "Франция": "FRA",
-        "Норвегия": "NOR",
-        "Грузия": "GEO",
-        "Хорватия": "CRO",
-        "Италия": "ITA",
-        "Камерун": "CMR",
-        "Дания": "DEN",
-        "Швейцария": "SUI",
-        "ДР Конго": "COD",
-    }
-
     const infoData = [
         {name: "Стоимость", content: `€ ${player.price} млн`},
         {name: "Зарплата/год", content: `€ ${player.salary} млн`},
     ]
+
+    const academy = isAcademy(player);
 
     return (
         <div className={"flex flex-col w-72 rounded-2xl border border-border bg-background-muted"}>
@@ -42,9 +20,10 @@ export function PlayerCard({player, onSell, onPromote}) {
                 player.lineUp === "Основной состав" ? "bg-role-starter" : 
                     player.lineUp === "Игрок ротации" ? "bg-role-bench" : 
                         player.lineUp === "Запасной состав" ? "bg-role-rotation" : 
+                            academy ? "bg-success" :
                              "bg-role-depth-border"
             }`}>{player.lineUp}</p>
-            <div className={"bg-primary-700 h-80 relative overflow-hidden flex justify-center items-end"}>
+            <Link to={`/player/${player.id}`} className={"bg-primary-700 h-80 relative overflow-hidden flex justify-center items-end"}>
                 {player.imgUrl ? (
                     <img
                         src={player.imgUrl}
@@ -61,15 +40,20 @@ export function PlayerCard({player, onSell, onPromote}) {
                 <div className={"absolute top-4 left-5 flex flex-col items-center"}>
                     <h1 className={"text-7xl text-secondary-light font-bold font-display"}>{player.power}</h1>
                     <p className={"text-2xl text-text-inverse font-bold font-display uppercase"}>{player.position}</p>
-                    <p className={"mt-3 bg-background-surface text-text rounded-md px-2 py-0.5 text-sm font-bold"}>{nationCodes[player.nation]}</p>
+                    <p className={"mt-3 bg-background-surface text-text rounded-md px-2 py-0.5 text-sm font-bold"}>{getNationCode(player.nation)}</p>
                 </div>
 
+                {academy && (
+                    <span className={"absolute bottom-4 right-5 rounded-md bg-success px-2 py-0.5 text-xs font-bold uppercase text-text-inverse"}>Академия</span>
+                )}
                 <h3 className={"absolute top-4 right-5 text-4xl text-primary-400 font-bold font-display"}>#{player.number}</h3>
-            </div>
+            </Link>
 
             <div className={"flex flex-col bg-background-surface rounded-b-2xl p-5"}>
                 <p className={"text-text-muted text-base"}>{player.lastName}</p>
-                <h2 className={"text-5xl text-text font-bold font-display uppercase"}>{player.name}</h2>
+                <Link to={`/player/${player.id}`} className={"hover:text-secondary-text"}>
+                    <h2 className={"text-5xl font-bold font-display uppercase"}>{player.name}</h2>
+                </Link>
                 <p className={"text-text-secondary text-base"}>{player.nation} · {player.age} лет</p>
 
                 <div className={"mt-4 flex flex-row space-x-3 w-full"}>
@@ -97,7 +81,7 @@ export function PlayerCard({player, onSell, onPromote}) {
 
                 <div className={"mt-4 flex flex-col space-y-2 w-full"}>
                     <Button text={"Продать"} variant={"danger"} size={"lg"} className={"w-full"} onClick={onSell}/>
-                    <Button text={"Изменить статус"} variant={"outline"} size={"lg"} className={"w-full border-primary"} onClick={onPromote}/>
+                    <Button text={academy ? "Перевести в основу" : "Изменить статус"} variant={"outline"} size={"lg"} className={"w-full border-primary"} onClick={onPromote}/>
                 </div>
             </div>
         </div>

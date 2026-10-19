@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { PlayerCard } from "@/components/PlayerCard.jsx";
 import { Button } from "@/components/Button.jsx";
+import { isAcademy } from "@/lib/players.js";
 
-const statusPriority = ["Основной состав", "Игрок ротации", "Запасной состав", "Глубина состава"];
+const statusPriority = ["Основной состав", "Игрок ротации", "Запасной состав", "Глубина состава", "Воспитанник"];
 
 const positionPriority = ["ВР", "ПЗ", "ЦЗ", "ЛЗ", "ОП", "ЦП", "АП", "ПВ", "ЛВ", "ФР"];
 
@@ -14,6 +15,7 @@ const filters = [
     {id: "rotation", label: "Ротация", test: player => player.lineUp === "Игрок ротации"},
     {id: "bench", label: "Запасные", test: player => player.lineUp === "Запасной состав"},
     {id: "depth", label: "Глубина", test: player => player.lineUp === "Глубина состава"},
+    {id: "academy", label: "Академия", test: isAcademy},
 
     {id: "gk", label: "Вратари", test: player => player.position === "ВР"},
     {id: "def", label: "Защита", test: player => ["ПЗ", "ЦЗ", "ЛЗ"].includes(player.position)},
@@ -55,8 +57,6 @@ export function LineUp({squad, onSell, onPromote}) {
     const sortedSquad = [...squad].sort(activeSort.compare);
     const orderedSquad = reversed ? sortedSquad.reverse() : sortedSquad;
     const visibleCount = orderedSquad.filter(activeFilter.test).length;
-
-    console.log("render LineUp");
 
     return(
         <section id={"line_up"} className={"flex flex-col space-y-4 p-20"}>
@@ -104,9 +104,9 @@ export function LineUp({squad, onSell, onPromote}) {
                 </div>
             </div>
 
-            <div className={"flex flex-row flex-wrap w-full justify-start gap-8/cl"}>
+            <div className={"flex flex-row flex-wrap w-full justify-start gap-8"}>
                 {orderedSquad.map(player => (
-                    <div key={`${player.name}-${resetKey}`} className={activeFilter.test(player) ? "" : "hidden"}>
+                    <div key={`${player.id}-${resetKey}`} className={activeFilter.test(player) ? "" : "hidden"}>
                         <PlayerCard
                             player={player}
                             onSell={() => onSell(player.id)}

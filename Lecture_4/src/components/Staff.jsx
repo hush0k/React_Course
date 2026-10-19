@@ -19,7 +19,7 @@ export function Staff({staff}) {
                     </thead>
                     <tbody>
                         {staff.map((person) => (
-                            <tr key={`${person.lastName} ${person.name}`} className={"border-t border-border"}>
+                            <tr key={person.id} className={"border-t border-border"}>
                                 <td className={"px-6 py-4"}>
                                     <p className={"text-text-muted text-sm"}>{person.lastName}</p>
                                     <p className={"text-text text-lg font-bold font-display uppercase"}>{person.name}</p>

@@ -59,7 +59,7 @@ export function Stadium({upgrades, budget, bonuses, onUpgrade}) {
                     const nextMultiplier = Math.round((upgrade.multiplier + upgrade.multiplierStep) * 100) / 100;
 
                     return (
-                        <div key={upgrade.name} className={"flex flex-col space-y-4 bg-background-surface shadow-soft rounded-lg border border-border p-5"}>
+                        <div key={upgrade.id} className={"flex flex-col space-y-4 bg-background-surface shadow-soft rounded-lg border border-border p-5"}>
                             <div className={"flex flex-row items-center justify-between"}>
                                 <p className={"text-text text-lg font-bold"}>{upgrade.name}</p>
                                 <p className={"bg-primary text-secondary-light font-display font-bold uppercase text-base rounded-sm px-2 py-0.5"}>
