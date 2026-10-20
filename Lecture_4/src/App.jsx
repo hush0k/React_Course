@@ -37,6 +37,8 @@ function App() {
     const [loadAttempt, setLoadAttempt] = useState(0);
     // текст ошибки действия (покупка, продажа, тур) для попапа
     const [actionError, setActionError] = useState(null);
+    // пока играется тур — блокируем кнопку и показываем загрузку
+    const [weekLoading, setWeekLoading] = useState(false);
 
     function applyData(data) {
         setFinance(data.finance);
@@ -129,16 +131,21 @@ function App() {
     }
 
     async function nextWeek() {
-        if (seasonOver) return;
+        if (seasonOver || weekLoading) return;
 
-        const day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-        const result = await playRound(day);
-        if (!result.ok) {
-            setActionError(result.error);
-            return;
+        setWeekLoading(true);
+        try {
+            const day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            const result = await playRound(day);
+            if (!result.ok) {
+                setActionError(result.error);
+                return;
+            }
+            setAcademyVersion(v => v + 1);
+            await loadAll();
+        } finally {
+            setWeekLoading(false);
         }
-        setAcademyVersion(v => v + 1);
-        await loadAll();
     }
 
     async function nextSeason() {
@@ -173,7 +180,7 @@ function App() {
 
     return (
         <div className={"flex flex-col items-start justify-start w-full"}>
-            <Header season={season} week={finance.week} weekIncrement={nextWeek} onNextSeason={nextSeason} seasonOver={seasonOver} fired={seasonResult === "lose"} onRestart={() => setRestartConfirmOpen(true)} availableBudget={finance.available_budget} transferBudgetLeft={finance.effective_transfer_left} power={power} />
+            <Header season={season} week={finance.week} weekIncrement={nextWeek} weekLoading={weekLoading} onNextSeason={nextSeason} seasonOver={seasonOver} fired={seasonResult === "lose"} onRestart={() => setRestartConfirmOpen(true)} availableBudget={finance.available_budget} transferBudgetLeft={finance.effective_transfer_left} power={power} />
             <Routes>
                 <Route path="/" element={
                     <HomePage

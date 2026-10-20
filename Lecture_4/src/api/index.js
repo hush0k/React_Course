@@ -234,8 +234,11 @@ export async function fetchAll() {
 }
 
 // итоги завершённых сезонов, новые сверху, вместе с задачами сезона
+// при ошибке бросаем исключение, чтобы страница показала ошибку, а не «сезонов нет»
 export async function fetchSeasonHistory() {
-    return (await getJson("/season/history")) ?? [];
+    const data = await getJson("/season/history");
+    if (data === null) throw new Error("history request failed");
+    return data;
 }
 
 // страница маркета/состава с фильтрами, сортировкой и пагинацией на бэке;
@@ -247,7 +250,7 @@ export async function fetchPlayers(params) {
     });
 
     const response = await fetch(`${API}/player?${query}`);
-    if (!response.ok) return {players: [], total: 0};
+    if (!response.ok) throw new Error(`players request failed: ${response.status}`);
 
     const total = response.headers.get("X-Total-Count");
     const players = (await response.json()).map(toPlayer);

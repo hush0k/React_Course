@@ -82,7 +82,9 @@ export function Market({players, finances, onBuy}) {
 
     const columns = ["Игрок", "Клуб", "Поз.", "Возраст", "Ранг", "Сила", "Стоимость", "Зарплата/год", ""];
 
-    const [result, setResult] = useState({key: null, players: [], total: 0, hasNext: false});
+    const [result, setResult] = useState({key: null, players: [], total: 0, hasNext: false, error: false});
+    // счётчик повторов: «Повторить» меняет ключ запроса и эффект запускается снова
+    const [retry, setRetry] = useState(0);
 
     const params = {
         status: "market",
@@ -96,7 +98,8 @@ export function Market({players, finances, onBuy}) {
         offset: (page - 1) * PAGE_SIZE,
     };
     const requestKey = JSON.stringify(params);
-    const loading = result.key !== requestKey;
+    const loading = result.key !== `${requestKey}#${retry}`;
+    const failed = !loading && result.error;
 
     // players меняется после покупки (App перезагружает данные) — тогда запрашиваем страницу заново
     useEffect(() => {
@@ -110,16 +113,20 @@ export function Market({players, finances, onBuy}) {
                 return;
             }
             setResult({
-                key: requestKey,
+                key: `${requestKey}#${retry}`,
                 players: found.slice(0, PAGE_SIZE),
                 total,
                 hasNext: found.length > PAGE_SIZE,
+                error: false,
             });
+        }).catch(() => {
+            // бэк недоступен или ответил ошибкой — показываем сообщение вместо вечной «загрузки»
+            if (!ignore) setResult({key: `${requestKey}#${retry}`, players: [], total: 0, hasNext: false, error: true});
         });
         return () => {
             ignore = true;
         };
-    }, [requestKey, players]);
+    }, [requestKey, retry, players]);
 
     const pagePlayers = result.players;
     const totalPages = result.total !== null
@@ -283,7 +290,17 @@ export function Market({players, finances, onBuy}) {
                                 </tr>
                             );
                         })}
-                        {!loading && pagePlayers.length === 0 && (
+                        {failed && (
+                            <tr>
+                                <td colSpan={columns.length} className={"px-6 py-12 text-center"}>
+                                    <div className={"flex flex-col items-center gap-3"}>
+                                        <p className={"text-danger text-base font-bold"}>Не удалось загрузить игроков рынка. Проверьте соединение и попробуйте ещё раз.</p>
+                                        <Button text={"Повторить"} size={"sm"} variant={"outline"} onClick={() => setRetry(r => r + 1)} />
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && !failed && pagePlayers.length === 0 && (
                             <tr>
                                 <td colSpan={columns.length} className={"px-6 py-12 text-center text-text-muted text-base"}>
                                     {search ? `По запросу «${search}» игроков нет` : "По этому фильтру игроков нет"}

@@ -336,9 +336,14 @@ export function AcademyPage({squad, version, onChange}) {
 
     useEffect(() => {
         let ignore = false;
-        fetchAcademy().then(data => {
-            if (!ignore) setResult({key: requestKey, academy: data});
-        });
+        fetchAcademy()
+            .then(data => {
+                if (!ignore) setResult({key: requestKey, academy: data});
+            })
+            .catch(() => {
+                // сеть упала — academy останется null и покажется сообщение об ошибке
+                if (!ignore) setResult({key: requestKey, academy: null});
+            });
         return () => {
             ignore = true;
         };
@@ -390,9 +395,10 @@ export function AcademyPage({squad, version, onChange}) {
                     </div>
 
                     {!loading && academy === null && (
-                        <p className={"rounded-lg border border-warning bg-warning/10 p-4 text-text text-sm"}>
-                            Не удалось загрузить академию. Проверьте, что бэкенд обновлён.
-                        </p>
+                        <div className={"flex flex-col items-start gap-3 rounded-lg border border-warning bg-warning/10 p-4"}>
+                            <p className={"text-text text-sm"}>Не удалось загрузить академию. Проверьте соединение и попробуйте ещё раз.</p>
+                            <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => setRefresh(r => r + 1)} />
+                        </div>
                     )}
 
                     {academy && players.length === 0 && (

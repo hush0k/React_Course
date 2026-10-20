@@ -4,7 +4,7 @@ import { FaArrowRight, FaBolt, FaExchangeAlt, FaRedo, FaWallet } from "react-ico
 import { FiMenu, FiX } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 
-export function Header({season, week, weekIncrement, onNextSeason, seasonOver, fired, onRestart, availableBudget, transferBudgetLeft, power}) {
+export function Header({season, week, weekIncrement, weekLoading, onNextSeason, seasonOver, fired, onRestart, availableBudget, transferBudgetLeft, power}) {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const links = [
@@ -79,9 +79,13 @@ export function Header({season, week, weekIncrement, onNextSeason, seasonOver, f
                        <FaRedo />
                    </Button>
                    <Button
-                       text={fired ? "Начать заново" : seasonOver ? "След. сезон" : "След. неделя"}
-                       icon={<FaArrowRight />}
+                       text={weekLoading ? "Играем тур…" : fired ? "Начать заново" : seasonOver ? "След. сезон" : "След. неделя"}
+                       icon={weekLoading
+                           ? <span className={"size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin"}></span>
+                           : <FaArrowRight />}
                        onClick={seasonOver ? onNextSeason : weekIncrement}
+                       disabled={weekLoading}
+                       aria-busy={weekLoading}
                        variant={"secondary"}
                        className={"font-black max-sm:px-3 max-sm:text-sm"}
                    />
