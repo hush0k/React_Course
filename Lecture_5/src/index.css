@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* Primary — Facebook blue (#1877F2 = primary-500) */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary-50: #e7f0fe;
+  --color-primary-100: #cfe1fd;
+  --color-primary-200: #a0c4fa;
+  --color-primary-300: #70a6f8;
+  --color-primary-400: #4189f5;
+  --color-primary-500: #1877f2;
+  --color-primary-600: #166fe5;
+  --color-primary-700: #0e5ac4;
+  --color-primary-800: #0b4593;
+  --color-primary-900: #072e62;
+  --color-primary-950: #041b3b;
+  --color-primary: #1877f2;
+}
+
+
+body {
+    background-color: #f8f9fe;
+}
