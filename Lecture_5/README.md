@@ -24,6 +24,14 @@ npm install
 npm run dev
 ```
 
+## Деплой
+
+Сайт: https://hush0k.github.io/React_Course/lecture5/
+
+```bash
+npm run deploy
+```
+
 ## Стек
 
 React, React Router, Tailwind CSS, Vite
