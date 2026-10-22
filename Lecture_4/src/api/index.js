@@ -15,7 +15,6 @@ function toPlayer(player) {
         ...player,
         lastName: player.last_name,
         lineUp: player.line_up,
-        // у воспитанников фото может не быть — тогда карточки показывают инициалы
         imgUrl: player.img_url ? `${import.meta.env.BASE_URL}${player.img_url}` : null,
     };
 }
@@ -41,7 +40,6 @@ function toStanding(row, clubs) {
         goalsAgainst: row.goals_against,
         goalDifference: row.goal_difference,
         isOwnClub: row.is_own_club,
-        // у своего клуба team_id = null, логотип берём из public
         imgUrl: club ? club.imgUrl : `${import.meta.env.BASE_URL}real_madrid.svg`,
     };
 }
@@ -56,7 +54,6 @@ function toMatches(schedule, clubs) {
             const enemyId = side === "home" ? match.guest_team_id : match.home_team_id;
             const realGoals = side === "home" ? match.home_goals : match.guest_goals;
             const enemyGoals = side === "home" ? match.guest_goals : match.home_goals;
-            // ничья в плей-офф ЛЧ решается пенальти
             const penalties = match.home_penalties === null ? null : {
                 real: side === "home" ? match.home_penalties : match.guest_penalties,
                 enemy: side === "home" ? match.guest_penalties : match.home_penalties,
@@ -81,12 +78,10 @@ function toMatches(schedule, clubs) {
             };
         })
         .filter(match => match !== null)
-        // по неделям; в одну неделю сначала Ла Лига, потом ЛЧ
         .sort((a, b) => a.week - b.week || (a.competition === "laliga" ? -1 : 1));
 }
 
 function toPlayoffTeam(id, name, clubs) {
-    // у своего клуба team_id = null
     const club = id === null ? null : clubs.find(item => item.id === id);
     return {
         id: id ?? "own",
@@ -100,11 +95,8 @@ function toPlayoffSide(match, side, clubs) {
     return toPlayoffTeam(match[`${side}_team_id`], match[side], clubs);
 }
 
-// Пара плей-офф: до финала — два матча (первый и ответный, хозяева меняются),
-// в финале и в сезонах по старым правилам — один. Стороны — как в первом матче
 function toPlayoffTie(first, second, clubs) {
     const decider = second ?? first;
-    // в ответном матче хозяин первого — гость
     const side = (own, other) => ({
         ...toPlayoffSide(first, own, clubs),
         scores: second ? [first[`${own}_goals`], second[`${other}_goals`]] : [first[`${own}_goals`]],
@@ -134,7 +126,6 @@ function toPlayoff(data, clubs) {
         qualified: data.qualified,
         rounds: stages.map(({stage, first, second}) => ({
             stage,
-            // ответный матч ищем по командам: хозяева поменялись местами
             matches: first.map(match => toPlayoffTie(
                 match,
                 second.find(item =>
@@ -146,8 +137,6 @@ function toPlayoff(data, clubs) {
     };
 }
 
-// титулы, выигранные в игре: завершённые сезоны из истории
-// плюс текущий, если он уже закончился, но ещё не попал в историю
 function countTrophies(history, finance, season, ownClub, playoff) {
     const trophies = {
         laliga: history.filter(item => item.laliga_position === 1).length,
@@ -168,7 +157,6 @@ async function getJson(url) {
     return response.json();
 }
 
-// POST-запрос; ошибку бэка возвращает текстом, чтобы показать её в попапе
 export async function post(url, body) {
     return request(url, "POST", body);
 }
@@ -188,7 +176,6 @@ export async function fetchAll() {
     const playoffData = await getJson("/league-of-champions/playoff");
     const objectivesData = await getJson("/objectives");
     const historyData = (await getJson("/season/history")) ?? [];
-    // 409, если основной состав пуст — тогда силу и шансы не показываем
     const powerData = await getJson("/game-engine/team-power");
     const upcomingMatches = await Promise.all((nextWeekData?.matches ?? []).map(async match => ({
         ...match,
@@ -196,7 +183,6 @@ export async function fetchAll() {
         winChance: powerData ? await getJson(`/game-engine/win-chance/${match.enemy.id}`) : null,
     })));
 
-    // без этих данных приложение не может работать — App покажет экран ошибки
     if (!financeData || !squadData || !marketData || !staffData || !clubsData || !upgradesData
         || !standingsData || !laligaSchedule || !championsSchedule) {
         throw new Error("Не удалось загрузить данные с сервера");
@@ -233,16 +219,12 @@ export async function fetchAll() {
     };
 }
 
-// итоги завершённых сезонов, новые сверху, вместе с задачами сезона
-// при ошибке бросаем исключение, чтобы страница показала ошибку, а не «сезонов нет»
 export async function fetchSeasonHistory() {
     const data = await getJson("/season/history");
     if (data === null) throw new Error("history request failed");
     return data;
 }
 
-// страница маркета/состава с фильтрами, сортировкой и пагинацией на бэке;
-// общее число найденных бэк отдаёт в заголовке X-Total-Count
 export async function fetchPlayers(params) {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -257,7 +239,6 @@ export async function fetchPlayers(params) {
     return {players, total: total === null ? null : Number(total)};
 }
 
-// запрос, который возвращает ошибку бэка как есть (detail из 409/422)
 async function request(url, method, body) {
     let response;
     try {
@@ -277,12 +258,10 @@ async function request(url, method, body) {
 function formatError(detail) {
     if (!detail) return "Не удалось выполнить запрос";
     if (typeof detail === "string") return detail;
-    // 422 от FastAPI — список ошибок по полям
     if (Array.isArray(detail)) return detail.map(item => item.msg).join("; ");
     return JSON.stringify(detail);
 }
 
-// академия: нагрузка и воспитанники (отсортированы по силе)
 export async function fetchAcademy() {
     const data = await getJson("/player/academy");
     if (!data) return null;
