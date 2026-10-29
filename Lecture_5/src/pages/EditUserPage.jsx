@@ -15,7 +15,6 @@ const sections = [
     { id: "danger", label: "Danger zone", icon: <FiAlertTriangle size={18}/> },
 ]
 
-// поля, по которым считается заполненность профиля
 const completenessFields = ["name", "age", "profession", "hobby", "city", "street", "description", "imgUrl", "bgUrl"];
 
 function toForm(user) {
@@ -68,7 +67,6 @@ export function EditUserPage() {
     const [deleting, setDeleting] = useState(false);
     const [actionError, setActionError] = useState(null);
 
-    // Загрузка пользователя: перезапускается при смене id или по кнопке Retry
     useEffect(() => {
         let ignore = false;
 
@@ -120,7 +118,6 @@ export function EditUserPage() {
         setErrors(nextErrors);
         if (Object.keys(nextErrors).length > 0) return;
 
-        // id фиксируем в момент старта действия
         const userId = user.id;
 
         setSaving(true);

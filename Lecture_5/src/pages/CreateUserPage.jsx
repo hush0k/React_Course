@@ -57,7 +57,6 @@ export function CreateUserPage() {
     function handleChange(e) {
         const {name, value, type, checked} = e.target;
         setForm((prev) => ({...prev, [name]: type === "checkbox" ? checked : value}));
-        // ошибку поля убираем, как только пользователь начал его исправлять
         setErrors((prev) => {
             if (!prev[name]) return prev;
             const next = {...prev};

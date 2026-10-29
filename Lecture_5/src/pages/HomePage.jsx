@@ -46,7 +46,6 @@ export function HomePage() {
 
     const {search, city, profession, status, sort} = filters;
 
-    // Загрузка списка: перезапускается при смене фильтров, страницы или по кнопке Reload
     useEffect(() => {
         let ignore = false;
 
@@ -94,7 +93,6 @@ export function HomePage() {
         };
     }, [search, city, profession, status, sort, page, reloadKey]);
 
-    // Загрузка деталей выбранного пользователя
     useEffect(() => {
         if (!selectedId) return;
 
@@ -152,7 +150,6 @@ export function HomePage() {
     async function handleToggleMarried(user) {
         if (pendingId) return;
 
-        // id и новое значение фиксируем в момент старта действия
         const id = user.id;
         const nextMarried = !user.married;
 

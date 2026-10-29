@@ -28,7 +28,6 @@ export function UserProfilePage() {
     const [pendingAction, setPendingAction] = useState(null);
     const [actionError, setActionError] = useState(null);
 
-    // Загрузка пользователя: перезапускается при смене id в URL или по кнопке Retry/Reload
     useEffect(() => {
         let ignore = false;
 
@@ -62,7 +61,6 @@ export function UserProfilePage() {
 
     const city = user?.address?.city;
 
-    // Загрузка людей из того же города: зависит только от города, а не от всего объекта user
     useEffect(() => {
         if (!city) return;
 
@@ -102,7 +100,6 @@ export function UserProfilePage() {
     async function handleToggleMarried() {
         if (pendingAction || !user) return;
 
-        // id и новое значение фиксируем в момент старта действия
         const userId = user.id;
         const nextMarried = !user.married;
 

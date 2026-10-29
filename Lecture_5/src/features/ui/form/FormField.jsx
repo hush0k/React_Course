@@ -1,5 +1,3 @@
-// Shared form controls. All extra props (name, value, onChange, ...) are passed to the native element.
-
 export function FormLabel({label, required, hint}) {
     return (
         <div className={"flex flex-row items-center justify-between"}>

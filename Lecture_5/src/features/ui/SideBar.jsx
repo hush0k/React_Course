@@ -15,7 +15,6 @@ const navBars = [
 export function SideBar() {
     return (
         <div className="w-full md:w-64 lg:w-80 shrink-0 px-3 pt-3 md:py-8">
-            {/* на мобильных меню становится горизонтальной прокручиваемой полосой */}
             <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto pb-1 md:pb-0">
                 {navBars.map((nav, i) => (
                     <NavLink
