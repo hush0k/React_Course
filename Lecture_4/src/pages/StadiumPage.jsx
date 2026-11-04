@@ -1,6 +1,8 @@
+import { useOutletContext } from "react-router-dom";
 import { Stadium } from "@/components/Stadium.jsx";
 
-export function StadiumPage({finance, upgrades, onUpgrade}) {
+export function StadiumPage() {
+    const {finance, upgrades, upgradeStadium: onUpgrade} = useOutletContext();
     return (
         <Stadium
             upgrades={upgrades}

@@ -1,7 +1,9 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams, useOutletContext } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { cn } from "@/lib/utils";
+import { fetchPlayer } from "@/services/service.js";
 import { average, getBlockReason, getFlagUrl, getPositionGroup, getRank, isAcademy, positionNames } from "@/lib/players.js";
 
 const lineUpColors = {
@@ -30,7 +32,7 @@ function round(value) {
 }
 
 function PlayerPhoto({player, className}) {
-    if (player.img_url) {
+    if (player.imgUrl) {
         return <img src={player.imgUrl} alt={`${player.lastName} ${player.name}`} className={className} />;
     }
 
@@ -83,20 +85,81 @@ function CompareBar({label, value, avg, max, suffix = ""}) {
     );
 }
 
-export function PlayerPage({squad, market, finance, onSell, onPromote, onBuy}) {
+function PageMessage({title, text, children}) {
+    return (
+        <section className={"container w-full py-24 flex flex-col items-start gap-4"}>
+            <p className={"text-secondary-text font-bold text-base uppercase tracking-eyebrow"}>Профиль игрока</p>
+            <h1 className={"text-text font-bold text-4xl md:text-6xl"}>{title}</h1>
+            {text && <p className={"text-text-secondary text-lg"}>{text}</p>}
+            {children && <div className={"flex flex-row flex-wrap gap-3"}>{children}</div>}
+        </section>
+    );
+}
+
+export function PlayerPage() {
+    const {squad, market, finance, sellPlayer: onSell, promotePlayer: onPromote, buyPlayer: onBuy} = useOutletContext();
     const {id} = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const player = squad.find(item => String(item.id) === id) ?? market.find(item => String(item.id) === id);
+    // результат последнего запроса: для какого id и какой попытки он получен
+    const [result, setResult] = useState({id: null, attempt: 0, player: null, error: null});
+    const [attempt, setAttempt] = useState(0);
+
+    // загружаем игрока по id из URL. squad/market в зависимостях — чтобы после
+    // покупки/продажи/перевода данные обновились. ignore отбрасывает ответы
+    // устаревших запросов (например, при быстром переходе между игроками).
+    useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+        fetchPlayer(id, controller.signal)
+            .then(player => {
+                if (!ignore) setResult({id, attempt, player, error: null});
+            })
+            .catch(error => {
+                if (!ignore && error.name !== "AbortError") {
+                    setResult({id, attempt, player: null, error: "Не удалось загрузить игрока. Проверьте подключение к серверу"});
+                }
+            });
+        return () => {
+            ignore = true;
+            controller.abort();
+        };
+    }, [id, attempt, squad, market]);
+
+    // назад по истории; если страницу открыли по прямой ссылке — в список
+    function goBack(fallback) {
+        if (location.key === "default") navigate(fallback);
+        else navigate(-1);
+    }
+
+    const loading = result.id !== id || (result.error !== null && result.attempt !== attempt);
+    const player = loading ? null : result.player;
+
+    if (loading) {
+        return (
+            <section className={"container w-full py-24 flex flex-col items-center gap-4"}>
+                <div className={"size-12 rounded-full border-4 border-background-subtle border-t-secondary animate-spin"}></div>
+                <p className={"text-text-secondary font-bold uppercase tracking-wide"}>Загрузка игрока...</p>
+            </section>
+        );
+    }
+
+    if (result.error) {
+        return (
+            <PageMessage title={"Ошибка загрузки"} text={result.error}>
+                <Button text={"Повторить"} variant={"primary"} onClick={() => setAttempt(a => a + 1)} />
+                <Button text={"Назад"} icon={<FiArrowLeft />} variant={"outline"} onClick={() => goBack("/team")} />
+            </PageMessage>
+        );
+    }
 
     if (!player) {
         return (
-            <section className={"container w-full py-24 flex flex-col items-start gap-4"}>
-                <p className={"text-secondary-text font-bold text-base uppercase tracking-eyebrow"}>Профиль игрока</p>
-                <h1 className={"text-text font-bold text-4xl md:text-6xl"}>Игрок не найден</h1>
-                <p className={"text-text-secondary text-lg"}>Возможно, он был продан или ушёл с рынка.</p>
-                <Link to={"/team"}><Button text={"К команде"} icon={<FiArrowLeft />} variant={"outline"} /></Link>
-            </section>
+            <PageMessage title={"Игрок не найден"} text={"Возможно, он был продан или ушёл с рынка."}>
+                <Button text={"Назад"} icon={<FiArrowLeft />} variant={"outline"} onClick={() => goBack("/team")} />
+                <Link to={"/team"}><Button text={"К команде"} variant={"outline"} /></Link>
+            </PageMessage>
         );
     }
 
@@ -158,9 +221,9 @@ export function PlayerPage({squad, market, finance, onSell, onPromote, onBuy}) {
                 <div className={"container relative flex flex-col lg:flex-row lg:items-end gap-6 pt-8 lg:pt-12"}>
                     <div className={"flex flex-col flex-1 pb-8 lg:pb-14 z-10"}>
                         <div className={"flex flex-row flex-wrap items-center justify-between gap-3"}>
-                            <Link to={backLink} className={"inline-flex items-center gap-2 text-primary-200 hover:text-secondary-light text-sm font-bold uppercase tracking-wide"}>
-                                <FiArrowLeft /> Все игроки
-                            </Link>
+                            <button type={"button"} onClick={() => goBack(backLink)} className={"inline-flex items-center gap-2 text-primary-200 hover:text-secondary-light text-sm font-bold uppercase tracking-wide cursor-pointer"}>
+                                <FiArrowLeft /> Назад
+                            </button>
                             <div className={"flex flex-row flex-wrap gap-2"}>
                                 <span className={cn("rounded-md px-2 py-1 text-xs font-bold uppercase", rank.className)}>{rank.label}</span>
                                 {inSquad
@@ -288,7 +351,7 @@ export function PlayerPage({squad, market, finance, onSell, onPromote, onBuy}) {
                                             <p className={"text-primary-300 text-xs font-bold uppercase"}>{item.position} · {item.age} лет</p>
                                         </div>
                                     </div>
-                                    {item.img_url && <img src={item.imgUrl} alt={item.name} className={"h-full w-28 object-contain object-bottom"} />}
+                                    {item.imgUrl && <img src={item.imgUrl} alt={item.name} className={"h-full w-28 object-contain object-bottom"} />}
                                 </Link>
                             ))}
                         </div>

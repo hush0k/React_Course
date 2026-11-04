@@ -1,9 +1,11 @@
+import { useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ClubHistory } from "@/components/ClubHistory.jsx";
 import { Button } from "@/components/Button.jsx";
-import { fetchSeasonHistory } from "@/api";
+import { fetchSeasonHistory } from "@/services/service.js";
 
-export function HistoryPage({season}) {
+export function HistoryPage() {
+    const {season} = useOutletContext();
     const [retry, setRetry] = useState(0);
     const [result, setResult] = useState({key: null, seasons: [], error: false});
     const requestKey = `${season}-${retry}`;

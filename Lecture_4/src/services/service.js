@@ -239,6 +239,14 @@ export async function fetchPlayers(params) {
     return {players, total: total === null ? null : Number(total)};
 }
 
+// один игрок по id: null, если такого нет (404), ошибка — при остальных сбоях
+export async function fetchPlayer(id, signal) {
+    const response = await fetch(`${API}/player/${encodeURIComponent(id)}`, {signal});
+    if (response.status === 404 || response.status === 422) return null;
+    if (!response.ok) throw new Error(`player request failed: ${response.status}`);
+    return toPlayer(await response.json());
+}
+
 async function request(url, method, body) {
     let response;
     try {

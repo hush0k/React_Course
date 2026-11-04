@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { FiChevronLeft, FiChevronRight, FiSearch, FiX } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
-import { fetchPlayers } from "@/api";
+import { fetchPlayers } from "@/services/service.js";
 import { getBlockReason, getRank, positionGroups } from "@/lib/players.js";
 
 const PAGE_SIZE = 10;
@@ -27,6 +27,24 @@ const sorts = [
     {id: "age", label: "Возраст"},
     {id: "name", label: "Фамилия"},
 ];
+
+// значения по умолчанию в URL не пишем — ссылка остаётся короткой
+const DEFAULTS = {filter: "all", sort: "power", page: 1, q: ""};
+
+// неизвестное значение из URL (опечатка, старая ссылка) заменяем значением по умолчанию
+function readOption(value, options, fallback) {
+    return options.some(option => option.id === value) ? value : fallback;
+}
+
+// копия query-параметров с изменениями; null или значение по умолчанию удаляют ключ
+function withParams(prev, changes) {
+    const next = new URLSearchParams(prev);
+    for (const [key, value] of Object.entries(changes)) {
+        if (value === null || value === undefined || value === DEFAULTS[key]) next.delete(key);
+        else next.set(key, String(value));
+    }
+    return next;
+}
 
 function getPageNumbers(page, totalPages) {
     // первая, последняя и соседние с текущей, остальное — многоточие
@@ -62,23 +80,38 @@ function Pagination({page, totalPages, onChange}) {
 }
 
 export function Market({players, finances, onBuy}) {
-    const [filterId, setFilterId] = useState("all");
-    const [sortId, setSortId] = useState("power");
-    const [reversed, setReversed] = useState(false);
-    const [page, setPage] = useState(1);
-    const [searchText, setSearchText] = useState("");
-    const [search, setSearch] = useState("");
+    // фильтр, сортировка, страница и поиск живут в URL: ?q=&filter=&sort=&order=desc&page=
+    // так состояние переживает перезагрузку, им можно поделиться ссылкой, а «Назад» возвращает прошлый вид
+    const [searchParams, setSearchParams] = useSearchParams();
+    const filterId = readOption(searchParams.get("filter"), filters, DEFAULTS.filter);
+    const sortId = readOption(searchParams.get("sort"), sorts, DEFAULTS.sort);
+    const reversed = searchParams.get("order") === "desc";
+    const page = Math.max(1, Number.parseInt(searchParams.get("page"), 10) || 1);
+    const search = (searchParams.get("q") ?? "").trim();
 
-    // запрос уходит не на каждый символ, а когда пользователь перестал печатать
+    // текст в поле ввода — локальный, в URL он попадает после паузы в наборе
+    const [searchText, setSearchText] = useState(search);
+    // если q в URL поменялся снаружи (кнопки «Назад»/«Вперёд»), подтягиваем его в поле
+    const [syncedSearch, setSyncedSearch] = useState(search);
+    if (search !== syncedSearch) {
+        setSyncedSearch(search);
+        if (searchText.trim() !== search) setSearchText(search);
+    }
+
+    function updateParams(changes, options) {
+        setSearchParams(prev => withParams(prev, changes), options);
+    }
+
+    // запрос уходит не на каждый символ, а когда пользователь перестал печатать;
+    // replace — чтобы каждая пауза в наборе не добавляла запись в историю
     useEffect(() => {
         const trimmed = searchText.trim();
         if (trimmed === search) return;
         const timer = setTimeout(() => {
-            setSearch(trimmed);
-            setPage(1);
+            setSearchParams(prev => withParams(prev, {q: trimmed, page: null}), {replace: true});
         }, SEARCH_DELAY);
         return () => clearTimeout(timer);
-    }, [searchText, search]);
+    }, [searchText, search, setSearchParams]);
 
     const columns = ["Игрок", "Клуб", "Поз.", "Возраст", "Ранг", "Сила", "Стоимость", "Зарплата/год", ""];
 
@@ -108,8 +141,10 @@ export function Market({players, finances, onBuy}) {
             if (ignore) return;
             const request = JSON.parse(requestKey);
             // после покупки последнего игрока на странице она опустеет — откатываемся назад
+            // (или в URL руками вписали слишком большой page)
             if (found.length === 0 && request.offset > 0) {
-                setPage(p => Math.max(1, p - 1));
+                const prevPage = Math.max(1, Math.ceil(request.offset / PAGE_SIZE));
+                setSearchParams(prev => withParams(prev, {page: prevPage}), {replace: true});
                 return;
             }
             setResult({
@@ -126,7 +161,7 @@ export function Market({players, finances, onBuy}) {
         return () => {
             ignore = true;
         };
-    }, [requestKey, retry, players]);
+    }, [requestKey, retry, players, setSearchParams]);
 
     const pagePlayers = result.players;
     const totalPages = result.total !== null
@@ -135,15 +170,11 @@ export function Market({players, finances, onBuy}) {
     const firstShown = pagePlayers.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
     const lastShown = (page - 1) * PAGE_SIZE + pagePlayers.length;
 
-    function changeFilter(id) {
-        setFilterId(id);
-        setPage(1);
-    }
-
-    function changeSort(id) {
-        setSortId(id);
-        setPage(1);
-    }
+    // смена фильтра/сортировки всегда возвращает на первую страницу
+    const changeFilter = id => updateParams({filter: id, page: null});
+    const changeSort = id => updateParams({sort: id, page: null});
+    const toggleReversed = () => updateParams({order: reversed ? null : "desc", page: null});
+    const changePage = next => updateParams({page: next});
 
     return (
         <section id={"market"} className={"container flex flex-col space-y-4 py-12 lg:py-20 w-full"}>
@@ -212,10 +243,7 @@ export function Market({players, finances, onBuy}) {
                         text={"Обратный порядок"}
                         size={"sm"}
                         variant={reversed ? "primary" : "outline"}
-                        onClick={() => {
-                            setReversed(r => !r);
-                            setPage(1);
-                        }}
+                        onClick={toggleReversed}
                     />
                 </div>
 
@@ -311,7 +339,7 @@ export function Market({players, finances, onBuy}) {
                 </table>
             </div>
 
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            <Pagination page={page} totalPages={totalPages} onChange={changePage} />
         </section>
     )
 }

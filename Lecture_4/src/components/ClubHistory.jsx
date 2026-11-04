@@ -1,5 +1,5 @@
 import { FaCheck, FaTimes, FaTrophy } from "react-icons/fa";
-import { PLAYOFF_STAGES } from "@/api/history.js";
+import { PLAYOFF_STAGES } from "@/services/history.js";
 import { cn } from "@/lib/utils.js";
 
 const statusLabels = {

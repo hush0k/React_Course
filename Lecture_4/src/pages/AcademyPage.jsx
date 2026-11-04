@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { FiCheckCircle, FiPlus, FiAlertTriangle } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { cn } from "@/lib/utils";
-import { createPlayer, fetchAcademy, promote, setTraining } from "@/api";
+import { createPlayer, fetchAcademy, promote, setTraining } from "@/services/service.js";
 import { ACADEMY, getTrainingWeight, nations, positionNames, trainings } from "@/lib/players.js";
 
 const TRAINING_CYCLE = 3;
@@ -327,7 +327,8 @@ function YouthRow({player, academy, onChanged}) {
     );
 }
 
-export function AcademyPage({squad, version, onChange}) {
+export function AcademyPage() {
+    const {squad, academyVersion: version, loadAll: onChange} = useOutletContext();
     const [refresh, setRefresh] = useState(0);
     const [result, setResult] = useState({key: null, academy: null});
     const requestKey = `${version}-${refresh}`;

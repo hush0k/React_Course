@@ -1,3 +1,4 @@
+import { useOutletContext } from "react-router-dom";
 import { useState } from "react";
 import { ClubBlock } from "@/components/ClubBlock.jsx";
 import { Matches } from "@/components/Matches.jsx";
@@ -6,7 +7,8 @@ import { TournamentTable } from "@/components/TournamentTable.jsx";
 import { TournamentSwitch } from "@/components/TournamentSwitch.jsx";
 import { PlayoffBracket } from "@/components/PlayoffBracket.jsx";
 
-export function HomePage({finance, upcomingMatches, date, matches, stats, standings, seasonOver, objectives, power, trophies}) {
+export function HomePage() {
+    const {finance, upcomingMatches, date, matches, stats, standings, seasonOver, objectives, power, trophies} = useOutletContext();
     const [tournamentId, setTournamentId] = useState("laLiga");
 
     const isChampions = tournamentId === "leagueOfChampions";
