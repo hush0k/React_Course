@@ -14,6 +14,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
         {to: "/stadium", title: "Стадион"},
         {to: "/market", title: "Маркет"},
         {to: "/history", title: "История"},
+        {to: "/login", title: "Вход"},
     ]
 
     const stats = [

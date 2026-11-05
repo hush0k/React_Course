@@ -9,7 +9,6 @@ const gridBackground = {
     backgroundSize: "56px 56px",
 };
 
-// куда летит мяч и куда прыгает вратарь (в % от ширины ворот)
 const corners = {
     left: {label: "Влево", x: -34, y: -18},
     center: {label: "По центру", x: 0, y: -26},
@@ -26,9 +25,8 @@ function pick(list) {
     return list[Math.floor(Math.random() * list.length)];
 }
 
-// мини-игра: серия пенальти, пока ищете нужную страницу
 function Penalty() {
-    const [shot, setShot] = useState(null); // {aim, keeper, result, line}
+    const [shot, setShot] = useState(null);
     const [score, setScore] = useState({goals: 0, shots: 0});
     const timer = useRef(null);
 
@@ -54,23 +52,18 @@ function Penalty() {
             </div>
 
             <div className={"relative h-56 rounded-md overflow-hidden border border-border-dark bg-primary-900"}>
-                {/* газон */}
                 <div className={"absolute inset-0"} style={{backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 40px, transparent 40px 80px)"}}></div>
-                {/* ворота */}
                 <div className={"absolute left-1/2 top-4 -translate-x-1/2 w-4/5 h-24 border-4 border-b-0 border-text-inverse rounded-t-sm"}
                      style={{backgroundImage: "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)", backgroundSize: "12px 12px"}}>
                 </div>
-                {/* линия штрафной и точка */}
                 <div className={"absolute left-0 right-0 top-28 h-px bg-text-inverse/30"}></div>
                 <div className={"absolute left-1/2 bottom-8 -translate-x-1/2 size-1.5 rounded-full bg-text-inverse/60"}></div>
 
-                {/* вратарь */}
                 <div className={"absolute left-1/2 top-[68px] h-14 w-6 rounded-full bg-secondary transition-transform duration-300 ease-out"}
                      style={{transform: `translateX(calc(-50% + ${keeper.x * 3}px)) rotate(${keeper.x}deg)`}}>
                     <div className={"absolute -top-3 left-1/2 -translate-x-1/2 size-5 rounded-full bg-secondary-light"}></div>
                 </div>
 
-                {/* мяч */}
                 <div className={"absolute left-1/2 bottom-6 text-2xl transition-all duration-500 ease-out"}
                      style={{transform: `translate(calc(-50% + ${ball.x * 3}px), ${ball.y * 4.6}px) scale(${shot ? 0.6 : 1}) rotate(${shot ? 540 : 0}deg)`}}>
                     ⚽
@@ -99,7 +92,6 @@ export function NotFoundPage() {
 
     return (
         <section className={"relative w-full overflow-hidden bg-primary-950 text-text-inverse"} style={gridBackground}>
-            {/* огромные цифры на фоне */}
             <p aria-hidden={"true"} className={"pointer-events-none select-none absolute -right-6 -bottom-16 font-display font-bold text-[260px] md:text-[420px] leading-none text-text-inverse/[0.04]"}>404</p>
 
             <div className={"container relative w-full py-16 lg:py-24 flex flex-col lg:flex-row lg:items-center gap-12 lg:gap-20"}>

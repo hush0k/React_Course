@@ -10,7 +10,6 @@ const PLAYOFF_STAGES = {
     final: "Финал",
 };
 
-// до финала пара из двух матчей
 function legLabel(leg) {
     return leg ? `, ${leg === 1 ? "1-й" : "ответный"} матч` : "";
 }
@@ -66,8 +65,6 @@ function PowerBadge({power, className}) {
     )
 }
 
-// шансы считает бэкенд: победа / ничья / поражение с точки зрения Реала.
-// победа Реала рисуется со стороны Реала, поэтому в гостях шкала зеркалится
 function WinChance({chance, realOnRight, v}) {
     const realParts = [
         {name: "Победа", value: chance.win, className: "bg-green-500"},
