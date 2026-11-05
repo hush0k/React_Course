@@ -2,20 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/Button.jsx";
 import { FaArrowRight, FaBolt, FaExchangeAlt, FaRedo, FaWallet } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { NavBar } from "@/components/NavBar.jsx";
 
 export function Header({season, week, weekIncrement, weekLoading, onNextSeason, seasonOver, fired, onRestart, availableBudget, transferBudgetLeft, power}) {
     const [menuOpen, setMenuOpen] = useState(false);
-
-    const links = [
-        {to: "/", title: "Клуб"},
-        {to: "/team", title: "Команда"},
-        {to: "/academy", title: "Академия"},
-        {to: "/stadium", title: "Стадион"},
-        {to: "/market", title: "Маркет"},
-        {to: "/history", title: "История"},
-        {to: "/login", title: "Вход"},
-    ]
 
     const stats = [
         {icon: <FaWallet />, label: "Бюджет", value: `€ ${Math.round(availableBudget)} млн`},
@@ -37,10 +27,6 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
         </div>
     );
 
-    const linkClass = ({isActive}) => "cursor-pointer hover:text-text-inverse uppercase text-base" +
-        " font-semibold whitespace-nowrap hover:border-b-2 hover:border-secondary-light " +
-        (isActive ? "text-text-inverse border-b-2 border-secondary-light" : "text-text-inverse-muted");
-
     return (
        <div className={"sticky top-0 z-50 w-full bg-primary border-b-3 border-b-secondary"}>
            <div className={"flex flex-row items-center justify-between gap-3 px-4 lg:px-20 py-2.5 min-h-16 lg:min-h-20"}>
@@ -53,13 +39,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                    </div>
                </div>
 
-               <nav className={"hidden xl:flex flex-row items-center justify-center gap-4 h-full"}>
-                   {links.map((link) => (
-                       <NavLink key={link.to} to={link.to} end={link.to === "/"} className={linkClass}>
-                           {link.title}
-                       </NavLink>
-                   ))}
-               </nav>
+               <NavBar />
 
                <div className={"flex flex-row items-center gap-2 lg:gap-3 shrink-0"}>
                    <div className={"hidden lg:block"}>{statsBox}</div>
@@ -104,20 +84,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
 
            {menuOpen && (
                <div className={"xl:hidden flex flex-col gap-4 px-4 lg:px-20 pb-4 border-t border-secondary/20"}>
-                   <nav className={"flex flex-col gap-1 pt-3"}>
-                       {links.map((link) => (
-                           <NavLink
-                               key={link.to}
-                               to={link.to}
-                               end={link.to === "/"}
-                               onClick={() => setMenuOpen(false)}
-                               className={({isActive}) => "uppercase text-base font-semibold py-2 px-2 rounded-md " +
-                                   (isActive ? "text-text-inverse bg-primary-800" : "text-text-inverse-muted hover:text-text-inverse")}
-                           >
-                               {link.title}
-                           </NavLink>
-                       ))}
-                   </nav>
+                   <NavBar mobile onNavigate={() => setMenuOpen(false)} />
                    <div className={"lg:hidden"}>{statsBox}</div>
                </div>
            )}
