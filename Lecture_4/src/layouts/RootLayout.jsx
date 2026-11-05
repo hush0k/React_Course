@@ -7,7 +7,6 @@ import { ErrorDialog } from "@/components/ErrorDialog.jsx";
 import { Button } from "@/components/Button.jsx";
 import { useGame } from "@/hooks/useGame.js";
 
-// индикатор, пока подгружается чанк ленивой страницы
 function PageFallback() {
     return (
         <div className={"flex flex-col items-center justify-center w-full py-24 space-y-4"}>
@@ -17,8 +16,6 @@ function PageFallback() {
     );
 }
 
-// Общий каркас: шапка с навигацией + <Outlet /> для вложенных страниц.
-// Данные игры передаются страницам через context у Outlet.
 export function RootLayout() {
     const game = useGame();
 

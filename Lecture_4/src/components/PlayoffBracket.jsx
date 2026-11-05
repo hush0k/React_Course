@@ -23,8 +23,6 @@ function hasTeam(match, team) {
     return team?.id != null && (match.home.id === team.id || match.guest.id === team.id);
 }
 
-// Сетка строится целиком сразу: чего ещё нет в данных — заполняется TBD,
-// а победители уже сыгранных пар сразу проходят в следующую стадию
 function buildBracket(playoff) {
     const stages = STAGES.filter(stage => stage.teams <= playoff.qualified);
     const columns = [];
@@ -66,7 +64,6 @@ function buildBracket(playoff) {
 function TeamLine({team, state}) {
     const isTbd = team.id === null;
     const isLoser = state === "loser";
-    // две игры: счёт каждого матча мелко, сумма — крупно; одна игра — только счёт
     const twoLegs = team.scores.length === 2;
     const total = twoLegs ? team.aggregate : team.scores[0] ?? null;
 
@@ -143,7 +140,6 @@ export function PlayoffBracket({playoff}) {
             <div className={"flex gap-6 min-w-max"}>
                 {columns.map((column, columnIndex) => {
                     const isLast = columnIndex === columns.length - 1;
-                    // по две пары в группе — от группы идёт скобка к следующей стадии
                     const groups = isLast
                         ? [column.matches]
                         : Array.from({length: column.matches.length / 2}, (_, i) => column.matches.slice(i * 2, i * 2 + 2));

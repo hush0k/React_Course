@@ -6,9 +6,8 @@ import { fetchPlayers } from "@/services/service.js";
 import { getBlockReason, getRank, positionGroups } from "@/lib/players.js";
 
 const PAGE_SIZE = 10;
-const SEARCH_DELAY = 300; // мс после последнего символа, прежде чем идём на бэк
+const SEARCH_DELAY = 300;
 
-// params — query-параметры GET /player, фильтрует и сортирует бэк
 const filters = [
     {id: "all", label: "Все", params: {}},
     {id: "available", label: "Доступные", params: {affordable: true}},
@@ -28,15 +27,12 @@ const sorts = [
     {id: "name", label: "Фамилия"},
 ];
 
-// значения по умолчанию в URL не пишем — ссылка остаётся короткой
 const DEFAULTS = {filter: "all", sort: "power", page: 1, q: ""};
 
-// неизвестное значение из URL (опечатка, старая ссылка) заменяем значением по умолчанию
 function readOption(value, options, fallback) {
     return options.some(option => option.id === value) ? value : fallback;
 }
 
-// копия query-параметров с изменениями; null или значение по умолчанию удаляют ключ
 function withParams(prev, changes) {
     const next = new URLSearchParams(prev);
     for (const [key, value] of Object.entries(changes)) {
@@ -47,7 +43,6 @@ function withParams(prev, changes) {
 }
 
 function getPageNumbers(page, totalPages) {
-    // первая, последняя и соседние с текущей, остальное — многоточие
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
         if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
@@ -80,8 +75,6 @@ function Pagination({page, totalPages, onChange}) {
 }
 
 export function Market({players, finances, onBuy}) {
-    // фильтр, сортировка, страница и поиск живут в URL: ?q=&filter=&sort=&order=desc&page=
-    // так состояние переживает перезагрузку, им можно поделиться ссылкой, а «Назад» возвращает прошлый вид
     const [searchParams, setSearchParams] = useSearchParams();
     const filterId = readOption(searchParams.get("filter"), filters, DEFAULTS.filter);
     const sortId = readOption(searchParams.get("sort"), sorts, DEFAULTS.sort);
@@ -89,9 +82,7 @@ export function Market({players, finances, onBuy}) {
     const page = Math.max(1, Number.parseInt(searchParams.get("page"), 10) || 1);
     const search = (searchParams.get("q") ?? "").trim();
 
-    // текст в поле ввода — локальный, в URL он попадает после паузы в наборе
     const [searchText, setSearchText] = useState(search);
-    // если q в URL поменялся снаружи (кнопки «Назад»/«Вперёд»), подтягиваем его в поле
     const [syncedSearch, setSyncedSearch] = useState(search);
     if (search !== syncedSearch) {
         setSyncedSearch(search);
@@ -102,8 +93,6 @@ export function Market({players, finances, onBuy}) {
         setSearchParams(prev => withParams(prev, changes), options);
     }
 
-    // запрос уходит не на каждый символ, а когда пользователь перестал печатать;
-    // replace — чтобы каждая пауза в наборе не добавляла запись в историю
     useEffect(() => {
         const trimmed = searchText.trim();
         if (trimmed === search) return;
@@ -116,17 +105,14 @@ export function Market({players, finances, onBuy}) {
     const columns = ["Игрок", "Клуб", "Поз.", "Возраст", "Ранг", "Сила", "Стоимость", "Зарплата/год", ""];
 
     const [result, setResult] = useState({key: null, players: [], total: 0, hasNext: false, error: false});
-    // счётчик повторов: «Повторить» меняет ключ запроса и эффект запускается снова
     const [retry, setRetry] = useState(0);
 
     const params = {
         status: "market",
         ...filters.find(filter => filter.id === filterId).params,
-        // бэк ищет по имени и фамилии в любом порядке («Педри», «Гонсалес Педри»)
         search: search || undefined,
         sort: sortId,
         reverse: reversed,
-        // берём на одного больше, чтобы знать про следующую страницу, даже если заголовок с total не пришёл
         limit: PAGE_SIZE + 1,
         offset: (page - 1) * PAGE_SIZE,
     };
@@ -134,14 +120,11 @@ export function Market({players, finances, onBuy}) {
     const loading = result.key !== `${requestKey}#${retry}`;
     const failed = !loading && result.error;
 
-    // players меняется после покупки (App перезагружает данные) — тогда запрашиваем страницу заново
     useEffect(() => {
         let ignore = false;
         fetchPlayers(JSON.parse(requestKey)).then(({players: found, total}) => {
             if (ignore) return;
             const request = JSON.parse(requestKey);
-            // после покупки последнего игрока на странице она опустеет — откатываемся назад
-            // (или в URL руками вписали слишком большой page)
             if (found.length === 0 && request.offset > 0) {
                 const prevPage = Math.max(1, Math.ceil(request.offset / PAGE_SIZE));
                 setSearchParams(prev => withParams(prev, {page: prevPage}), {replace: true});
@@ -155,7 +138,6 @@ export function Market({players, finances, onBuy}) {
                 error: false,
             });
         }).catch(() => {
-            // бэк недоступен или ответил ошибкой — показываем сообщение вместо вечной «загрузки»
             if (!ignore) setResult({key: `${requestKey}#${retry}`, players: [], total: 0, hasNext: false, error: true});
         });
         return () => {
@@ -170,7 +152,6 @@ export function Market({players, finances, onBuy}) {
     const firstShown = pagePlayers.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
     const lastShown = (page - 1) * PAGE_SIZE + pagePlayers.length;
 
-    // смена фильтра/сортировки всегда возвращает на первую страницу
     const changeFilter = id => updateParams({filter: id, page: null});
     const changeSort = id => updateParams({sort: id, page: null});
     const toggleReversed = () => updateParams({order: reversed ? null : "desc", page: null});

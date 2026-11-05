@@ -14,7 +14,6 @@ const lineUpColors = {
     "Воспитанник": "bg-success text-text-inverse",
 };
 
-// тонкая сетка на фоне, как на референсе
 const gridBackground = {
     backgroundImage: "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
     backgroundSize: "56px 56px",
@@ -102,13 +101,9 @@ export function PlayerPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // результат последнего запроса: для какого id и какой попытки он получен
     const [result, setResult] = useState({id: null, attempt: 0, player: null, error: null});
     const [attempt, setAttempt] = useState(0);
 
-    // загружаем игрока по id из URL. squad/market в зависимостях — чтобы после
-    // покупки/продажи/перевода данные обновились. ignore отбрасывает ответы
-    // устаревших запросов (например, при быстром переходе между игроками).
     useEffect(() => {
         let ignore = false;
         const controller = new AbortController();
@@ -127,7 +122,6 @@ export function PlayerPage() {
         };
     }, [id, attempt, squad, market]);
 
-    // назад по истории; если страницу открыли по прямой ссылке — в список
     function goBack(fallback) {
         if (location.key === "default") navigate(fallback);
         else navigate(-1);
@@ -271,7 +265,6 @@ export function PlayerPage() {
                 </div>
             </section>
 
-            {/* ---------- Ключевые показатели ---------- */}
             <section className={"container w-full -mt-px py-10 lg:py-14 flex flex-col gap-10"}>
                 <div className={"grid grid-cols-2 lg:grid-cols-4 gap-4"}>
                     <StatCard label={"Сила"} hint={`#${poolPlace} из ${pool.length} ${inSquad ? "в команде" : "на рынке"}`}>
@@ -328,7 +321,6 @@ export function PlayerPage() {
                     </div>
                 </div>
 
-                {/* ---------- Похожие игроки ---------- */}
                 {similar.length > 0 && (
                     <div className={"flex flex-col gap-4"}>
                         <div className={"flex flex-row items-end justify-between gap-4"}>

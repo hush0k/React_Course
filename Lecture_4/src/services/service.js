@@ -239,7 +239,6 @@ export async function fetchPlayers(params) {
     return {players, total: total === null ? null : Number(total)};
 }
 
-// один игрок по id: null, если такого нет (404), ошибка — при остальных сбоях
 export async function fetchPlayer(id, signal) {
     const response = await fetch(`${API}/player/${encodeURIComponent(id)}`, {signal});
     if (response.status === 404 || response.status === 422) return null;
@@ -293,7 +292,6 @@ export async function promote(id) {
     return request(`/player/${id}/promote`, "POST");
 }
 
-// тур сезона: в ответе результаты матчей и прогресс тренировок академии
 export async function playRound(date) {
     return request("/season/round", "POST", {date});
 }

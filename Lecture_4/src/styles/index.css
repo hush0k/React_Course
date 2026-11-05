@@ -1,10 +1,6 @@
 @import "tailwindcss";
 
-/*
- * Madrid Manager — design tokens (Tailwind v4).
- * Only theme tokens + base layer. Default Tailwind tokens are kept;
- * keys with the same name (xs, sm, wide, …) are overridden by design.
- */
+
 @theme {
   /* ---------- Colors ---------- */
   --color-primary: #0b1736;

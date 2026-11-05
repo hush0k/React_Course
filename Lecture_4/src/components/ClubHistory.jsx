@@ -44,7 +44,6 @@ function Results({wins, draws, losses}) {
 function TournamentResult({logo, title, children, className}) {
     return (
         <div className={cn("flex flex-row items-center gap-4 rounded-lg p-4 flex-1", className)}>
-            {/* светлая подложка, чтобы тёмные логотипы были видны на тёмной карточке ЛЧ */}
             <div className={"flex items-center justify-center h-16 w-16 shrink-0 rounded-lg bg-white p-2 shadow-sm"}>
                 <img src={`${import.meta.env.BASE_URL}${logo}`} alt={title} className={"h-full w-full object-contain"}/>
             </div>

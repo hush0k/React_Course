@@ -3,7 +3,6 @@ import { FaCity } from "react-icons/fa";
 import { MdStadium } from "react-icons/md";
 import { IoMdPerson } from "react-icons/io";
 
-// реальные титулы клуба до старта игры
 const BASE_CHAMPIONS_LEAGUE_TITLES = 15;
 const BASE_LALIGA_TITLES = 36;
 

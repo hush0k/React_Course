@@ -15,7 +15,6 @@ function formatChampionsStage(value) {
     return CHAMPIONS_STAGES[value] ?? "—";
 }
 
-// иконка и подписи прогресса зависят от типа задачи
 const objectiveTypes = {
     laliga_place: {
         icon: FaListOl,
@@ -101,7 +100,6 @@ function ObjectiveCard({objective}) {
 
     return (
         <div className={"flex flex-col bg-background-surface shadow-card rounded-xl border border-border overflow-hidden"}>
-            {/* тёмная шапка как в профиле клуба */}
             <div className={"flex flex-row items-center justify-between bg-primary px-5 py-4"}>
                 <div className={"bg-primary-700 rounded-full p-3 text-secondary"}>
                     <TypeIcon size={20}/>
@@ -126,7 +124,6 @@ function ObjectiveCard({objective}) {
                 </div>
             </div>
 
-            {/* полоска статуса снизу */}
             <div className={cn("h-1.5 w-full", status.bar)}></div>
         </div>
     )

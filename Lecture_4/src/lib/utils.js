@@ -1,8 +1,6 @@
 import { clsx } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'
 
-// Кастомные токены из @theme в index.css — иначе tailwind-merge
-// путает, например, text-hero (размер) с text-primary (цвет)
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {

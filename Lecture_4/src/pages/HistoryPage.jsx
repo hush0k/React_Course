@@ -11,7 +11,6 @@ export function HistoryPage() {
     const requestKey = `${season}-${retry}`;
     const loading = result.key !== requestKey;
 
-    // сезон сменился — значит, в истории появилась новая запись
     useEffect(() => {
         let ignore = false;
         fetchSeasonHistory()
@@ -26,7 +25,6 @@ export function HistoryPage() {
         };
     }, [requestKey]);
 
-    // первая загрузка — спиннер; при повторной показываем старые данные, пока не придут новые
     if (loading && result.key === null) {
         return (
             <div className={"container flex flex-col items-center justify-center gap-4 py-24"}>

@@ -10,7 +10,6 @@ const variants = {
         logo: "ring-2 ring-white/60",
     },
 };
-// плей-офф оформлен так же, как Лига Чемпионов
 variants.championsPlayoff = variants.leagueOfChampions;
 
 const tournaments = [
@@ -39,7 +38,7 @@ export function TournamentSwitch({value, onChange}) {
                                 : "border-transparent text-text-muted hover:bg-background-surface hover:text-text",
                         )}
                     >
-                        {/* белая подложка только у выбранного, чтобы тёмный логотип ЛЧ было видно на синем фоне */}
+
                         <span
                             className={cn(
                                 "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200",

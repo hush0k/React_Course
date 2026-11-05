@@ -1,4 +1,3 @@
-// Общие справочники и расчёты по игрокам: используются в маркете и на странице игрока
 
 export const positionNames = {
     "ВР": "Вратарь",
@@ -24,7 +23,6 @@ export function getPositionGroup(position) {
     return positionGroups.find(group => group.positions.includes(position));
 }
 
-// коды для flagcdn.com
 const nationFlags = {
     "Австрия": "at",
     "Алжир": "dz",
@@ -65,7 +63,6 @@ const nationFlags = {
     "Япония": "jp",
 };
 
-// трёхбуквенные коды сборных (как в FIFA) для карточки игрока
 const nationCodes = {
     "Австрия": "AUT",
     "Алжир": "ALG",
@@ -112,7 +109,6 @@ export const lineUps = ["Основной состав", "Игрок ротац�
 
 export const ACADEMY = "Воспитанник";
 
-// вес тренировки — сколько она занимает из лимита нагрузки академии
 export const trainings = [
     {id: "Без тренировок", label: "Без тренировок", weight: 0},
     {id: "Умеренная тренировка", label: "Умеренная", weight: 1},
@@ -133,7 +129,6 @@ export function getFlagUrl(nation) {
     return code ? `https://flagcdn.com/${code}.svg` : null;
 }
 
-// если страны нет в справочнике — первые три буквы названия
 export function getNationCode(nation) {
     if (!nation) return "";
     return nationCodes[nation] ?? nation.slice(0, 3).toUpperCase();

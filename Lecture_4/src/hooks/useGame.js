@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchAll, getWeekDate, playRound, post } from "@/services/service.js";
 
-// Всё состояние игры и действия над ним. Используется в RootLayout,
-// а страницы получают результат через useOutletContext().
 export function useGame() {
     const [finance, setFinance] = useState(null);
     const [squad, setSquad] = useState([]);
@@ -19,14 +17,10 @@ export function useGame() {
     const [objectives, setObjectives] = useState([]);
     const [power, setPower] = useState(null);
     const [trophies, setTrophies] = useState({laliga: 0, championsLeague: 0});
-    // меняется после тура, чтобы страница академии перезапросила данные
     const [academyVersion, setAcademyVersion] = useState(0);
-    // ошибка первой загрузки и номер попытки для кнопки "Повторить"
     const [loadError, setLoadError] = useState(null);
     const [loadAttempt, setLoadAttempt] = useState(0);
-    // текст ошибки действия (покупка, продажа, тур) для попапа
     const [actionError, setActionError] = useState(null);
-    // пока играется тур — блокируем кнопку и показываем загрузку
     const [weekLoading, setWeekLoading] = useState(false);
 
     function applyData(data) {
@@ -136,18 +130,15 @@ export function useGame() {
     }
 
     return {
-        // данные
         finance, squad, market, staff, upgrades, upcoming, matches, standings, stats,
         season, objectives, power, trophies, academyVersion, date, seasonOver, seasonResult,
         upcomingMatches: upcoming?.matches ?? [],
-        // состояние интерфейса
         loadError, actionError, weekLoading, restartConfirmOpen, seasonResultClosed,
         retryLoad,
         clearActionError: () => setActionError(null),
         openRestartConfirm: () => setRestartConfirmOpen(true),
         closeRestartConfirm: () => setRestartConfirmOpen(false),
         closeSeasonResult: () => setSeasonResultClosed(true),
-        // действия
         loadAll, sellPlayer, buyPlayer, promotePlayer, upgradeStadium, nextWeek, nextSeason, restartGame,
     };
 }
