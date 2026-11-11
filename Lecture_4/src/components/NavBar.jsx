@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { clearToken } from "@/services/token.js";
 
 const links = [
     {to: "/", title: "Клуб"},
@@ -7,7 +8,6 @@ const links = [
     {to: "/stadium", title: "Стадион"},
     {to: "/market", title: "Маркет"},
     {to: "/history", title: "История"},
-    {to: "/login", title: "Вход"},
 ]
 
 const desktopLinkClass = ({isActive}) => "cursor-pointer hover:text-text-inverse uppercase text-base" +
@@ -18,6 +18,14 @@ const mobileLinkClass = ({isActive}) => "uppercase text-base font-semibold py-2 
     (isActive ? "text-text-inverse bg-primary-800" : "text-text-inverse-muted hover:text-text-inverse");
 
 export function NavBar({mobile = false, onNavigate}) {
+    const navigate = useNavigate();
+
+    function handleLogout() {
+        clearToken();
+        onNavigate?.();
+        navigate("/login", {replace: true});
+    }
+
     return (
         <nav className={mobile
             ? "flex flex-col gap-1 pt-3"
@@ -33,6 +41,15 @@ export function NavBar({mobile = false, onNavigate}) {
                     {link.title}
                 </NavLink>
             ))}
+            <button
+                type={"button"}
+                onClick={handleLogout}
+                className={mobile
+                    ? "text-left uppercase text-base font-semibold py-2 px-2 rounded-md text-text-inverse-muted hover:text-text-inverse cursor-pointer"
+                    : "cursor-pointer uppercase text-base font-semibold whitespace-nowrap text-text-inverse-muted hover:text-text-inverse"}
+            >
+                Выйти
+            </button>
         </nav>
     );
 }

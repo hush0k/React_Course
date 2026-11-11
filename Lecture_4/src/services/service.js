@@ -1,3 +1,5 @@
+import { authHeaders, handleUnauthorized, setToken } from "@/services/token.js";
+
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 export function getWeekDate(week) {
@@ -152,7 +154,8 @@ function countTrophies(history, finance, season, ownClub, playoff) {
 }
 
 async function getJson(url) {
-    const response = await fetch(`${API}${url}`);
+    const response = await fetch(`${API}${url}`, {headers: authHeaders()});
+    handleUnauthorized(response);
     if (!response.ok) return null;
     return response.json();
 }
@@ -231,7 +234,8 @@ export async function fetchPlayers(params) {
         if (value !== undefined && value !== null && value !== false) query.append(key, value);
     });
 
-    const response = await fetch(`${API}/player?${query}`);
+    const response = await fetch(`${API}/player?${query}`, {headers: authHeaders()});
+    handleUnauthorized(response);
     if (!response.ok) throw new Error(`players request failed: ${response.status}`);
 
     const total = response.headers.get("X-Total-Count");
@@ -240,7 +244,8 @@ export async function fetchPlayers(params) {
 }
 
 export async function fetchPlayer(id, signal) {
-    const response = await fetch(`${API}/player/${encodeURIComponent(id)}`, {signal});
+    const response = await fetch(`${API}/player/${encodeURIComponent(id)}`, {signal, headers: authHeaders()});
+    handleUnauthorized(response);
     if (response.status === 404 || response.status === 422) return null;
     if (!response.ok) throw new Error(`player request failed: ${response.status}`);
     return toPlayer(await response.json());
@@ -251,12 +256,13 @@ async function request(url, method, body) {
     try {
         response = await fetch(`${API}${url}`, {
             method,
-            headers: {"Content-Type": "application/json"},
+            headers: authHeaders({"Content-Type": "application/json"}),
             body: body ? JSON.stringify(body) : undefined,
         });
     } catch {
         return {ok: false, data: null, error: "Сервер недоступен. Проверьте подключение"};
     }
+    if (!url.startsWith("/auth/")) handleUnauthorized(response);
     const data = await response.json().catch(() => null);
     if (response.ok) return {ok: true, data, error: null};
     return {ok: false, data: null, error: formatError(data?.detail)};
@@ -294,4 +300,18 @@ export async function promote(id) {
 
 export async function playRound(date) {
     return request("/season/round", "POST", {date});
+}
+
+async function authenticate(url, username, password) {
+    const result = await request(url, "POST", {username, password});
+    if (result.ok) setToken(result.data.access_token);
+    return result;
+}
+
+export function register(username, password) {
+    return authenticate("/auth/register", username, password);
+}
+
+export function login(username, password) {
+    return authenticate("/auth/login", username, password);
 }
