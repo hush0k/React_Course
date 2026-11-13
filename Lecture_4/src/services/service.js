@@ -228,13 +228,13 @@ export async function fetchSeasonHistory() {
     return data;
 }
 
-export async function fetchPlayers(params) {
+export async function fetchPlayers(params, signal) {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== false) query.append(key, value);
     });
 
-    const response = await fetch(`${API}/player?${query}`, {headers: authHeaders()});
+    const response = await fetch(`${API}/player?${query}`, {signal, headers: authHeaders()});
     handleUnauthorized(response);
     if (!response.ok) throw new Error(`players request failed: ${response.status}`);
 

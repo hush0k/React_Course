@@ -4,12 +4,12 @@ import { FiUserPlus } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { GoogleButton } from "@/components/GoogleButton.jsx";
 import { AuthCard, AuthError, AuthField } from "@/components/AuthCard.jsx";
-import { register, loginWithGoogle } from "@/services/service.js";
-import { getToken } from "@/services/token.js";
+import { useAuth } from "@/context/AuthContext.jsx";
 import { validatePassword, validateUsername } from "@/services/authValidation.js";
 
 export function RegisterPage() {
     const navigate = useNavigate();
+    const {isAuthenticated, signup, loginWithGoogle} = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -17,7 +17,7 @@ export function RegisterPage() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    if (getToken()) return <Navigate to={"/"} replace />;
+    if (isAuthenticated) return <Navigate to={"/"} replace />;
 
     const errors = {
         username: validateUsername(username.trim()),
@@ -33,7 +33,7 @@ export function RegisterPage() {
 
         setLoading(true);
         setError(null);
-        const result = await register(username.trim(), password);
+        const result = await signup(username.trim(), password);
         setLoading(false);
         if (!result.ok) {
             setError(result.error);

@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { RootLayout } from "@/layouts/RootLayout.jsx";
 import { HomePage } from "@/pages/HomePage.jsx";
-import { getToken } from "@/services/token.js";
+import { useAuth } from "@/context/AuthContext.jsx";
 
 
 function lazyPage(load, name) {
@@ -17,17 +17,21 @@ const PlayerPage = lazyPage(() => import("@/pages/PlayerPage.jsx"), "PlayerPage"
 const HistoryPage = lazyPage(() => import("@/pages/HistoryPage.jsx"), "HistoryPage");
 const LoginPage = lazyPage(() => import("@/pages/LoginPage.jsx"), "LoginPage");
 const RegisterPage = lazyPage(() => import("@/pages/RegisterPage.jsx"), "RegisterPage");
+const ProfilePage = lazyPage(() => import("@/pages/ProfilePage.jsx"), "ProfilePage");
 const NotFoundPage = lazyPage(() => import("@/pages/NotFoundPage.jsx"), "NotFoundPage");
 
 function RequireAuth({children}) {
-    return getToken() ? children : <Navigate to={"/login"} replace />;
+    const {isAuthenticated, loading} = useAuth();
+    if (loading) return null;
+    return isAuthenticated ? children : <Navigate to={"/login"} replace />;
 }
 
 function App() {
     return (
         <Routes>
             <Route path="login" element={<Suspense fallback={null}><LoginPage /></Suspense>} />
-            <Route path="register" element={<Suspense fallback={null}><RegisterPage /></Suspense>} />
+            <Route path="signup" element={<Suspense fallback={null}><RegisterPage /></Suspense>} />
+            <Route path="register" element={<Navigate to={"/signup"} replace />} />
             <Route element={<RequireAuth><RootLayout /></RequireAuth>}>
                 <Route index element={<HomePage />} />
                 <Route path="team" element={<TeamPage />} />
@@ -35,6 +39,7 @@ function App() {
                 <Route path="stadium" element={<StadiumPage />} />
                 <Route path="market" element={<MarketPage />} />
                 <Route path="player/:id" element={<PlayerPage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="history" element={<HistoryPage />} />
                 <Route path="*" element={<NotFoundPage />} />
             </Route>

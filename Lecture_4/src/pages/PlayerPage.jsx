@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useOutletContext } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { cn } from "@/lib/utils";
-import { fetchPlayer } from "@/services/service.js";
+import { usePlayerQuery } from "@/hooks/queries.js";
 import { average, getBlockReason, getFlagUrl, getPositionGroup, getRank, isAcademy, positionNames } from "@/lib/players.js";
 
 const lineUpColors = {
@@ -101,34 +100,12 @@ export function PlayerPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [result, setResult] = useState({id: null, attempt: 0, player: null, error: null});
-    const [attempt, setAttempt] = useState(0);
-
-    useEffect(() => {
-        let ignore = false;
-        const controller = new AbortController();
-        fetchPlayer(id, controller.signal)
-            .then(player => {
-                if (!ignore) setResult({id, attempt, player, error: null});
-            })
-            .catch(error => {
-                if (!ignore && error.name !== "AbortError") {
-                    setResult({id, attempt, player: null, error: "Не удалось загрузить игрока. Проверьте подключение к серверу"});
-                }
-            });
-        return () => {
-            ignore = true;
-            controller.abort();
-        };
-    }, [id, attempt, squad, market]);
+    const {data: player, isPending: loading, isError, refetch} = usePlayerQuery(id);
 
     function goBack(fallback) {
         if (location.key === "default") navigate(fallback);
         else navigate(-1);
     }
-
-    const loading = result.id !== id || (result.error !== null && result.attempt !== attempt);
-    const player = loading ? null : result.player;
 
     if (loading) {
         return (
@@ -139,10 +116,10 @@ export function PlayerPage() {
         );
     }
 
-    if (result.error) {
+    if (isError) {
         return (
-            <PageMessage title={"Ошибка загрузки"} text={result.error}>
-                <Button text={"Повторить"} variant={"primary"} onClick={() => setAttempt(a => a + 1)} />
+            <PageMessage title={"Ошибка загрузки"} text={"Не удалось загрузить игрока. Проверьте подключение к серверу"}>
+                <Button text={"Повторить"} variant={"primary"} onClick={() => refetch()} />
                 <Button text={"Назад"} icon={<FiArrowLeft />} variant={"outline"} onClick={() => goBack("/team")} />
             </PageMessage>
         );

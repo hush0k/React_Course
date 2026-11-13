@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { FiChevronLeft, FiChevronRight, FiSearch, FiX } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
-import { fetchPlayers } from "@/services/service.js";
+import { usePlayersQuery } from "@/hooks/queries.js";
 import { getBlockReason, getRank, positionGroups } from "@/lib/players.js";
 
 const PAGE_SIZE = 10;
@@ -104,9 +104,6 @@ export function Market({players, finances, onBuy}) {
 
     const columns = ["Игрок", "Клуб", "Поз.", "Возраст", "Ранг", "Сила", "Стоимость", "Зарплата/год", ""];
 
-    const [result, setResult] = useState({key: null, players: [], total: 0, hasNext: false, error: false});
-    const [retry, setRetry] = useState(0);
-
     const params = {
         status: "market",
         ...filters.find(filter => filter.id === filterId).params,
@@ -116,36 +113,24 @@ export function Market({players, finances, onBuy}) {
         limit: PAGE_SIZE + 1,
         offset: (page - 1) * PAGE_SIZE,
     };
-    const requestKey = JSON.stringify(params);
-    const loading = result.key !== `${requestKey}#${retry}`;
-    const failed = !loading && result.error;
+    const {data, isFetching, isError, isPlaceholderData, refetch} = usePlayersQuery(params);
+    const loading = isFetching && (isPlaceholderData || !data);
+    const failed = isError && !data;
+    const found = data?.players ?? [];
 
+    // пустая страница не на первой позиции — возвращаемся на предыдущую
     useEffect(() => {
-        let ignore = false;
-        fetchPlayers(JSON.parse(requestKey)).then(({players: found, total}) => {
-            if (ignore) return;
-            const request = JSON.parse(requestKey);
-            if (found.length === 0 && request.offset > 0) {
-                const prevPage = Math.max(1, Math.ceil(request.offset / PAGE_SIZE));
-                setSearchParams(prev => withParams(prev, {page: prevPage}), {replace: true});
-                return;
-            }
-            setResult({
-                key: `${requestKey}#${retry}`,
-                players: found.slice(0, PAGE_SIZE),
-                total,
-                hasNext: found.length > PAGE_SIZE,
-                error: false,
-            });
-        }).catch(() => {
-            if (!ignore) setResult({key: `${requestKey}#${retry}`, players: [], total: 0, hasNext: false, error: true});
-        });
-        return () => {
-            ignore = true;
-        };
-    }, [requestKey, retry, players, setSearchParams]);
+        if (data && !isPlaceholderData && found.length === 0 && params.offset > 0) {
+            const prevPage = Math.max(1, Math.ceil(params.offset / PAGE_SIZE));
+            setSearchParams(prev => withParams(prev, {page: prevPage}), {replace: true});
+        }
+    }, [data, isPlaceholderData, found.length, params.offset, setSearchParams]);
 
-    const pagePlayers = result.players;
+    const result = {
+        total: data?.total ?? 0,
+        hasNext: found.length > PAGE_SIZE,
+    };
+    const pagePlayers = found.slice(0, PAGE_SIZE);
     const totalPages = result.total !== null
         ? Math.max(1, Math.ceil(result.total / PAGE_SIZE))
         : page + (result.hasNext ? 1 : 0);
@@ -304,7 +289,7 @@ export function Market({players, finances, onBuy}) {
                                 <td colSpan={columns.length} className={"px-6 py-12 text-center"}>
                                     <div className={"flex flex-col items-center gap-3"}>
                                         <p className={"text-danger text-base font-bold"}>Не удалось загрузить игроков рынка. Проверьте соединение и попробуйте ещё раз.</p>
-                                        <Button text={"Повторить"} size={"sm"} variant={"outline"} onClick={() => setRetry(r => r + 1)} />
+                                        <Button text={"Повторить"} size={"sm"} variant={"outline"} onClick={() => refetch()} />
                                     </div>
                                 </td>
                             </tr>

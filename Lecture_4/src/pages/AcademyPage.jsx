@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { FiCheckCircle, FiPlus, FiAlertTriangle } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { cn } from "@/lib/utils";
-import { createPlayer, fetchAcademy, promote, setTraining } from "@/services/service.js";
+import { createPlayer, promote, setTraining } from "@/services/service.js";
+import { useAcademyQuery } from "@/hooks/queries.js";
 import { ACADEMY, getTrainingWeight, nations, positionNames, trainings } from "@/lib/players.js";
 
 const TRAINING_CYCLE = 3;
@@ -328,32 +329,12 @@ function YouthRow({player, academy, onChanged}) {
 }
 
 export function AcademyPage() {
-    const {squad, academyVersion: version, loadAll: onChange} = useOutletContext();
-    const [refresh, setRefresh] = useState(0);
-    const [result, setResult] = useState({key: null, academy: null});
-    const requestKey = `${version}-${refresh}`;
-    const loading = result.key !== requestKey;
-    const academy = result.academy;
-
-    useEffect(() => {
-        let ignore = false;
-        fetchAcademy()
-            .then(data => {
-                if (!ignore) setResult({key: requestKey, academy: data});
-            })
-            .catch(() => {
-                // сеть упала — academy останется null и покажется сообщение об ошибке
-                if (!ignore) setResult({key: requestKey, academy: null});
-            });
-        return () => {
-            ignore = true;
-        };
-    }, [requestKey]);
+    const {squad, loadAll: onChange} = useOutletContext();
+    const {data: academy, isPending: loading, refetch} = useAcademyQuery();
 
     // после любого изменения перечитываем и академию, и общие данные клуба
     function handleChanged() {
-        setRefresh(r => r + 1);
-        onChange();
+        onChange(); // loadAll инвалидирует кэш академии
     }
 
     const players = academy?.players ?? [];
@@ -398,7 +379,7 @@ export function AcademyPage() {
                     {!loading && academy === null && (
                         <div className={"flex flex-col items-start gap-3 rounded-lg border border-warning bg-warning/10 p-4"}>
                             <p className={"text-text text-sm"}>Не удалось загрузить академию. Проверьте соединение и попробуйте ещё раз.</p>
-                            <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => setRefresh(r => r + 1)} />
+                            <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => refetch()} />
                         </div>
                     )}
 

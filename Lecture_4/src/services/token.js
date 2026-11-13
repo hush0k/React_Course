@@ -35,3 +35,20 @@ export function handleUnauthorized(response) {
         window.location.hash = "#/login";
     }
 }
+
+function decodeBase64Url(part) {
+    const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
+    return decodeURIComponent(
+        atob(padded).split("").map(c => "%" + c.charCodeAt(0).toString(16).padStart(2, "0")).join(""),
+    );
+}
+
+/** Декодирует payload JWT без проверки подписи (подпись проверяет сервер). */
+export function decodeToken(token) {
+    try {
+        return JSON.parse(decodeBase64Url(token.split(".")[1]));
+    } catch {
+        return null;
+    }
+}

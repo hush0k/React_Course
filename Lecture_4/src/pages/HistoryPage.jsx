@@ -1,31 +1,11 @@
-import { useOutletContext } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { ClubHistory } from "@/components/ClubHistory.jsx";
 import { Button } from "@/components/Button.jsx";
-import { fetchSeasonHistory } from "@/services/service.js";
+import { useSeasonHistoryQuery } from "@/hooks/queries.js";
 
 export function HistoryPage() {
-    const {season} = useOutletContext();
-    const [retry, setRetry] = useState(0);
-    const [result, setResult] = useState({key: null, seasons: [], error: false});
-    const requestKey = `${season}-${retry}`;
-    const loading = result.key !== requestKey;
+    const {data: seasons = [], isPending, isError, refetch} = useSeasonHistoryQuery();
 
-    useEffect(() => {
-        let ignore = false;
-        fetchSeasonHistory()
-            .then(data => {
-                if (!ignore) setResult({key: requestKey, seasons: data, error: false});
-            })
-            .catch(() => {
-                if (!ignore) setResult({key: requestKey, seasons: [], error: true});
-            });
-        return () => {
-            ignore = true;
-        };
-    }, [requestKey]);
-
-    if (loading && result.key === null) {
+    if (isPending) {
         return (
             <div className={"container flex flex-col items-center justify-center gap-4 py-24"}>
                 <div className={"size-12 rounded-full border-4 border-background-subtle border-t-secondary animate-spin"}></div>
@@ -34,14 +14,14 @@ export function HistoryPage() {
         );
     }
 
-    if (!loading && result.error) {
+    if (isError) {
         return (
             <div className={"container flex flex-col items-center justify-center gap-4 py-24 text-center"}>
                 <p className={"text-danger text-base font-bold"}>Не удалось загрузить историю клуба. Проверьте соединение и попробуйте ещё раз.</p>
-                <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => setRetry(r => r + 1)} />
+                <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => refetch()} />
             </div>
         );
     }
 
-    return <ClubHistory seasons={result.seasons}/>
+    return <ClubHistory seasons={seasons}/>
 }

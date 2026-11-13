@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useInvalidateGameData } from "@/hooks/queries.js";
 import { fetchAll, getWeekDate, playRound, post } from "@/services/service.js";
 
 export function useGame() {
+    const invalidateGameData = useInvalidateGameData();
     const [finance, setFinance] = useState(null);
     const [squad, setSquad] = useState([]);
     const [market, setMarket] = useState([]);
@@ -42,6 +44,8 @@ export function useGame() {
     async function loadAll() {
         try {
             applyData(await fetchAll());
+            // данные изменились на сервере — кэш игроков/академии/истории устарел
+            invalidateGameData();
         } catch {
             setActionError("Не удалось обновить данные. Проверьте подключение к серверу");
         }

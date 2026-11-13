@@ -4,17 +4,17 @@ import { FiLock } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { GoogleButton } from "@/components/GoogleButton.jsx";
 import { AuthCard, AuthError, AuthField } from "@/components/AuthCard.jsx";
-import { login, loginWithGoogle } from "@/services/service.js";
-import { getToken } from "@/services/token.js";
+import { useAuth } from "@/context/AuthContext.jsx";
 
 export function LoginPage() {
     const navigate = useNavigate();
+    const {isAuthenticated, login, loginWithGoogle} = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    if (getToken()) return <Navigate to={"/"} replace />;
+    if (isAuthenticated) return <Navigate to={"/"} replace />;
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -53,7 +53,7 @@ export function LoginPage() {
             icon={<FiLock />}
             title={"Вход"}
             subtitle={"Войдите, чтобы продолжить карьеру менеджера"}
-            footer={<>Нет аккаунта? <Link to={"/register"} className={"font-semibold text-primary underline"}>Зарегистрироваться</Link></>}
+            footer={<>Нет аккаунта? <Link to={"/signup"} className={"font-semibold text-primary underline"}>Зарегистрироваться</Link></>}
         >
             <form className={"flex flex-col gap-4"} onSubmit={handleSubmit} noValidate>
                 <AuthField

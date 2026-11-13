@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { clearToken } from "@/services/token.js";
+import { useAuth } from "@/context/AuthContext.jsx";
 
 const links = [
     {to: "/", title: "Клуб"},
@@ -19,9 +19,10 @@ const mobileLinkClass = ({isActive}) => "uppercase text-base font-semibold py-2 
 
 export function NavBar({mobile = false, onNavigate}) {
     const navigate = useNavigate();
+    const {isAuthenticated, logout} = useAuth();
 
     function handleLogout() {
-        clearToken();
+        logout();
         onNavigate?.();
         navigate("/login", {replace: true});
     }
@@ -41,15 +42,31 @@ export function NavBar({mobile = false, onNavigate}) {
                     {link.title}
                 </NavLink>
             ))}
+            {isAuthenticated ? (
+                <>
+                    <NavLink to={"/profile"} onClick={onNavigate} className={mobile ? mobileLinkClass : desktopLinkClass}>
+                        Профиль
+                    </NavLink>
             <button
-                type={"button"}
-                onClick={handleLogout}
-                className={mobile
-                    ? "text-left uppercase text-base font-semibold py-2 px-2 rounded-md text-text-inverse-muted hover:text-text-inverse cursor-pointer"
-                    : "cursor-pointer uppercase text-base font-semibold whitespace-nowrap text-text-inverse-muted hover:text-text-inverse"}
-            >
-                Выйти
-            </button>
+                        type={"button"}
+                        onClick={handleLogout}
+                        className={mobile
+                            ? "text-left uppercase text-base font-semibold py-2 px-2 rounded-md text-text-inverse-muted hover:text-text-inverse cursor-pointer"
+                            : "cursor-pointer uppercase text-base font-semibold whitespace-nowrap text-text-inverse-muted hover:text-text-inverse"}
+                    >
+                        Выйти
+                    </button>
+                </>
+            ) : (
+                <>
+                    <NavLink to={"/login"} onClick={onNavigate} className={mobile ? mobileLinkClass : desktopLinkClass}>
+                        Войти
+                    </NavLink>
+                    <NavLink to={"/signup"} onClick={onNavigate} className={mobile ? mobileLinkClass : desktopLinkClass}>
+                        Регистрация
+                    </NavLink>
+                </>
+            )}
         </nav>
     );
 }
