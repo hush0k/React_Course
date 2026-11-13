@@ -315,3 +315,9 @@ export function register(username, password) {
 export function login(username, password) {
     return authenticate("/auth/login", username, password);
 }
+
+export async function loginWithGoogle(credential) {
+    const result = await request("/auth/google", "POST", {credential});
+    if (result.ok) setToken(result.data.access_token);
+    return result;
+}

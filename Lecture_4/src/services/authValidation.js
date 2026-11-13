@@ -12,3 +12,4 @@ export function validatePassword(password) {
     if (new TextEncoder().encode(password).length > 72) return "Слишком длинный пароль (максимум 72 байта)";
     return null;
 }
+

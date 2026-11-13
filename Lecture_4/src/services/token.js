@@ -12,7 +12,7 @@ export function setToken(token) {
     try {
         localStorage.setItem(TOKEN_KEY, token);
     } catch {
-        // storage unavailable — token lives only for this session
+
     }
 }
 
@@ -20,7 +20,7 @@ export function clearToken() {
     try {
         localStorage.removeItem(TOKEN_KEY);
     } catch {
-        // ignore
+
     }
 }
 

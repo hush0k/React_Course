@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
+import { GoogleButton } from "@/components/GoogleButton.jsx";
 import { AuthCard, AuthError, AuthField } from "@/components/AuthCard.jsx";
-import { login } from "@/services/service.js";
+import { login, loginWithGoogle } from "@/services/service.js";
 import { getToken } from "@/services/token.js";
 
 export function LoginPage() {
@@ -26,6 +27,19 @@ export function LoginPage() {
         setLoading(true);
         setError(null);
         const result = await login(username.trim(), password);
+        setLoading(false);
+        if (!result.ok) {
+            setError(result.error);
+            return;
+        }
+        navigate("/", {replace: true});
+    }
+
+    async function handleGoogle(credential) {
+        if (loading) return;
+        setLoading(true);
+        setError(null);
+        const result = await loginWithGoogle(credential);
         setLoading(false);
         if (!result.ok) {
             setError(result.error);
@@ -68,6 +82,9 @@ export function LoginPage() {
                     className={"w-full justify-center"}
                 />
             </form>
+            <div className={"mt-4 flex flex-col gap-4"}>
+                <GoogleButton onCredential={handleGoogle} disabled={loading} />
+            </div>
         </AuthCard>
     );
 }
