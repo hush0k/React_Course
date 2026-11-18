@@ -128,7 +128,7 @@ export function Market({players, finances, onBuy}) {
     }, [data, isPlaceholderData, found.length, params.offset, setSearchParams]);
 
     const result = {
-        total: data?.total ?? 0,
+        total: data?.total ?? null,
         hasNext: found.length > PAGE_SIZE,
     };
     const pagePlayers = found.slice(0, PAGE_SIZE);
