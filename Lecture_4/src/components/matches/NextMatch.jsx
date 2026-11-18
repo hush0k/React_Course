@@ -65,6 +65,18 @@ function PowerBadge({power, className}) {
     )
 }
 
+function MatchTeam({team, nameFirst, v}) {
+    return (
+        <div className={cn("flex flex-col items-center gap-2 flex-1 min-w-0 md:flex-none md:gap-10", nameFirst ? "md:flex-row" : "md:flex-row-reverse")}>
+            <h2 className={`order-last md:order-none text-center md:text-left break-words font-bold text-lg md:text-4xl xl:text-6xl md:w-min ${v.teamName}`}>{team.name}</h2>
+            <div className={"flex flex-col items-center gap-2 w-14 md:w-20 shrink-0"}>
+                <img src={team.imgUrl} alt="" />
+                <PowerBadge power={team.power} className={v.power}/>
+            </div>
+        </div>
+    )
+}
+
 function WinChance({chance, realOnRight, v}) {
     const realParts = [
         {name: "Победа", value: chance.win, className: "bg-green-500"},
@@ -80,7 +92,7 @@ function WinChance({chance, realOnRight, v}) {
                     <div key={part.name} className={part.className} style={{width: `${part.value * 100}%`}}/>
                 ))}
             </div>
-            <div className={cn("flex flex-row justify-between text-sm", v.chanceLabel)}>
+            <div className={cn("flex flex-row justify-between gap-2 text-xs sm:text-sm", v.chanceLabel)}>
                 {parts.map(part => (
                     <p key={part.name}>{part.name} <span className={"font-bold"}>{percent(part.value)}%</span></p>
                 ))}
@@ -98,7 +110,7 @@ export function NextMatch({enemyTeam, side, competition, stage, round, leg, date
     const v = competition === "laliga" ? variants.laLiga : variants.leagueOfChampions;
 
     return (
-        <div className={`flex flex-col xl:flex-row items-center justify-between gap-8 p-6 md:p-10 w-full rounded-lg border ${v.card}`}>
+        <div className={`flex flex-col 2xl:flex-row items-center justify-between gap-8 p-4 sm:p-6 md:p-10 w-full rounded-lg border ${v.card}`}>
             <div className={"flex flex-col space-y-2"}>
                 <p className={`uppercase font-bold text-sm px-3 py-1 tracking-wide rounded-sm ${v.badge}`}>Следующий матч</p>
                 <p className={v.title}>{competitionTitle(competition, stage, round, leg)}</p>
@@ -106,18 +118,10 @@ export function NextMatch({enemyTeam, side, competition, stage, round, leg, date
             </div>
 
             <div className={"flex flex-col items-center gap-6"}>
-                <div className={"flex flex-row gap-4 md:gap-10 items-center"}>
-                    <h2 className={`font-bold text-2xl md:text-4xl xl:text-6xl w-min ${v.teamName}`}>{home.name}</h2>
-                    <div className={"flex flex-col items-center gap-2 w-14 md:w-20 shrink-0"}>
-                        <img src={home.imgUrl} alt="" />
-                        <PowerBadge power={home.power} className={v.power}/>
-                    </div>
+                <div className={"flex flex-row gap-2 md:gap-10 items-center justify-between w-full md:w-auto"}>
+                    <MatchTeam team={home} nameFirst v={v}/>
                     <p className={`text-3xl md:text-5xl uppercase font-bold font-display ${v.vs}`}>VS</p>
-                    <div className={"flex flex-col items-center gap-2 w-14 md:w-20 shrink-0"}>
-                        <img src={away.imgUrl} alt="" />
-                        <PowerBadge power={away.power} className={v.power}/>
-                    </div>
-                    <h2 className={`font-bold text-2xl md:text-4xl xl:text-6xl w-min ${v.teamName}`}>{away.name}</h2>
+                    <MatchTeam team={away} v={v}/>
                 </div>
                 {winChance && <WinChance chance={winChance} realOnRight={!isHome} v={v}/>}
             </div>
