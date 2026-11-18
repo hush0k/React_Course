@@ -9,7 +9,7 @@ const variants = {
 }
 
 const sizes = {
-    sm: 'h-9 gap-1.5 px-3 text-sm',
+    sm: 'h-control gap-1.5 px-3 text-sm sm:h-9',
     md: 'h-control gap-2 px-5 text-base-sm',
     lg: 'h-control-lg gap-2 px-6 text-base-sm',
     icon: 'size-control p-0',

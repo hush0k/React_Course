@@ -1,11 +1,13 @@
 import { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { Header } from "@/components/Header.jsx";
 import { SeasonResult } from "@/components/SeasonResult.jsx";
 import { ConfirmDialog } from "@/components/ConfirmDialog.jsx";
 import { ErrorDialog } from "@/components/ErrorDialog.jsx";
 import { Button } from "@/components/Button.jsx";
+import { CachedDataNotice } from "@/components/CachedDataNotice.jsx";
 import { useGame } from "@/hooks/useGame.js";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus.js";
 
 function PageFallback() {
     return (
@@ -18,6 +20,11 @@ function PageFallback() {
 
 export function RootLayout() {
     const game = useGame();
+    const online = useOnlineStatus();
+
+    if (game.loadError && !online) {
+        return <Navigate to={"/offline"} replace />;
+    }
 
     if (game.loadError) {
         return (
@@ -53,6 +60,7 @@ export function RootLayout() {
                 transferBudgetLeft={game.finance.effective_transfer_left}
                 power={game.power}
             />
+            <CachedDataNotice />
             <Suspense fallback={<PageFallback />}>
                 <Outlet context={game} />
             </Suspense>

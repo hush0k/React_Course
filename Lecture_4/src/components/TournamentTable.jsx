@@ -48,17 +48,17 @@ export function TournamentTable({standings, variant = "laLiga", qualified = 16})
                 <h3 className={cn("font-display font-bold text-3xl", v.title)}>{title}</h3>
             </div>
 
-            <table className={"w-full min-w-[640px] text-base"}>
+            <table className={"w-full text-base"}>
                 <thead>
                 <tr className={cn("border-b text-sm uppercase tracking-wide font-bold", v.head)}>
                     <th className={"py-3 w-10 text-left"}>№</th>
                     <th className={"py-3 text-left"}>Команда</th>
                     <th className={"py-3 w-10"}>И</th>
-                    <th className={"py-3 w-10"}>В</th>
-                    <th className={"py-3 w-10"}>Н</th>
-                    <th className={"py-3 w-10"}>П</th>
-                    <th className={"py-3 w-16"}>Мячи</th>
-                    <th className={"py-3 w-12"}>РМ</th>
+                    <th className={"py-3 w-10 hidden md:table-cell"}>В</th>
+                    <th className={"py-3 w-10 hidden md:table-cell"}>Н</th>
+                    <th className={"py-3 w-10 hidden md:table-cell"}>П</th>
+                    <th className={"py-3 w-16 hidden md:table-cell"}>Мячи</th>
+                    <th className={"py-3 w-12 hidden md:table-cell"}>РМ</th>
                     <th className={"py-3 w-12"}>О</th>
                 </tr>
                 </thead>
@@ -88,11 +88,11 @@ export function TournamentTable({standings, variant = "laLiga", qualified = 16})
                                 </div>
                             </td>
                             <td className={"py-4"}>{row.played}</td>
-                            <td className={"py-4"}>{row.wins}</td>
-                            <td className={"py-4"}>{row.draws}</td>
-                            <td className={"py-4"}>{row.losses}</td>
-                            <td className={cn("py-4", v.muted)}>{row.goalsFor}:{row.goalsAgainst}</td>
-                            <td className={"py-4"}>
+                            <td className={"py-4 hidden md:table-cell"}>{row.wins}</td>
+                            <td className={"py-4 hidden md:table-cell"}>{row.draws}</td>
+                            <td className={"py-4 hidden md:table-cell"}>{row.losses}</td>
+                            <td className={cn("py-4 hidden md:table-cell", v.muted)}>{row.goalsFor}:{row.goalsAgainst}</td>
+                            <td className={"py-4 hidden md:table-cell"}>
                                 {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
                             </td>
                             <td className={cn("py-4 font-bold text-xl", v.points)}>{row.points}</td>

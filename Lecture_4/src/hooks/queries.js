@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchAcademy, fetchPlayer, fetchPlayers, fetchSeasonHistory } from "@/services/service.js";
+import { fetchAcademy, fetchPlayer, fetchPlayers, fetchPublicData, fetchSeasonHistory } from "@/services/service.js";
 
 // Ключи кэша. Иерархия позволяет инвалидировать группу: invalidateQueries({queryKey: ["players"]})
 export const queryKeys = {
@@ -7,6 +7,7 @@ export const queryKeys = {
     player: id => ["player", String(id)],
     academy: () => ["academy"],
     history: () => ["history"],
+    publicData: () => ["public-data"],
 };
 
 const MINUTE = 60 * 1000;
@@ -37,6 +38,15 @@ export function useAcademyQuery() {
             return academy;
         },
         staleTime: 30 * 1000,
+    });
+}
+
+export function usePublicDataQuery() {
+    return useQuery({
+        queryKey: queryKeys.publicData(),
+        queryFn: fetchPublicData,
+        staleTime: MINUTE,
+        networkMode: "always",
     });
 }
 

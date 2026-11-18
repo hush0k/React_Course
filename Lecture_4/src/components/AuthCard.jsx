@@ -26,7 +26,7 @@ export function AuthField({label, error, className, ...props}) {
                 {...props}
                 aria-invalid={error ? true : undefined}
                 className={cn(
-                    "rounded-md border border-border px-3 py-2 font-normal disabled:opacity-60 disabled:cursor-not-allowed",
+                    "h-control rounded-md border border-border px-3 font-normal disabled:opacity-60 disabled:cursor-not-allowed",
                     error && "border-red-500",
                     className,
                 )}

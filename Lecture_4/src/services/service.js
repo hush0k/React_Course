@@ -1,4 +1,5 @@
 import { authHeaders, handleUnauthorized, setToken } from "@/services/token.js";
+import { setShowingCachedData } from "@/services/cacheStatus.js";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -153,8 +154,20 @@ function countTrophies(history, finance, season, ownClub, playoff) {
     return trophies;
 }
 
+function trackCache(response) {
+    if (response.headers.get("Cache-Control")?.includes("public")) {
+        setShowingCachedData(response.headers.get("X-From-Cache") === "true");
+    }
+}
+
 async function getJson(url) {
-    const response = await fetch(`${API}${url}`, {headers: authHeaders()});
+    let response;
+    try {
+        response = await fetch(`${API}${url}`, {headers: authHeaders()});
+    } catch {
+        return null;
+    }
+    trackCache(response);
     handleUnauthorized(response);
     if (!response.ok) return null;
     return response.json();
@@ -222,6 +235,19 @@ export async function fetchAll() {
     };
 }
 
+export async function fetchPublicData() {
+    const clubsData = await getJson("/team");
+    const standingsData = await getJson("/season/standings");
+    const marketData = await getJson("/player?status=market");
+    if (!clubsData || !standingsData || !marketData) throw new Error("public data request failed");
+
+    const clubs = clubsData.map(toTeam);
+    return {
+        laliga: standingsData.map(row => toStanding(row, clubs)),
+        market: marketData.map(toPlayer),
+    };
+}
+
 export async function fetchSeasonHistory() {
     const data = await getJson("/season/history");
     if (data === null) throw new Error("history request failed");
@@ -235,6 +261,7 @@ export async function fetchPlayers(params, signal) {
     });
 
     const response = await fetch(`${API}/player?${query}`, {signal, headers: authHeaders()});
+    trackCache(response);
     handleUnauthorized(response);
     if (!response.ok) throw new Error(`players request failed: ${response.status}`);
 
@@ -245,6 +272,7 @@ export async function fetchPlayers(params, signal) {
 
 export async function fetchPlayer(id, signal) {
     const response = await fetch(`${API}/player/${encodeURIComponent(id)}`, {signal, headers: authHeaders()});
+    trackCache(response);
     handleUnauthorized(response);
     if (response.status === 404 || response.status === 422) return null;
     if (!response.ok) throw new Error(`player request failed: ${response.status}`);

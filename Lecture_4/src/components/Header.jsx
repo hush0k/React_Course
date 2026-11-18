@@ -3,6 +3,7 @@ import { Button } from "@/components/Button.jsx";
 import { FaArrowRight, FaBolt, FaExchangeAlt, FaRedo, FaWallet } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import { NavBar } from "@/components/NavBar.jsx";
+import { ConnectionStatus } from "@/components/ConnectionStatus.jsx";
 
 export function Header({season, week, weekIncrement, weekLoading, onNextSeason, seasonOver, fired, onRestart, availableBudget, transferBudgetLeft, power}) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -14,9 +15,9 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
     ]
 
     const statsBox = (
-        <div className={"flex flex-row items-center rounded-lg bg-primary-800 border border-secondary/30 divide-x divide-secondary/20"}>
+        <div className={"flex flex-col sm:flex-row sm:items-center rounded-lg bg-primary-800 border border-secondary/30 divide-y sm:divide-y-0 sm:divide-x divide-secondary/20"}>
             {stats.map((stat) => (
-                <div key={stat.label} className={"flex flex-row items-center gap-2 px-3 py-1.5 flex-1"}>
+                <div key={stat.label} className={"flex flex-row items-center gap-2 px-3 py-1.5 sm:flex-1"}>
                     <span className={"text-secondary text-sm"}>{stat.icon}</span>
                     <div className={"flex flex-col leading-tight"}>
                         <span className={"text-[10px] uppercase tracking-wider text-text-inverse-muted"}>{stat.label}</span>
@@ -30,10 +31,10 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
     return (
        <div className={"sticky top-0 z-50 w-full bg-primary border-b-3 border-b-secondary"}>
            <div className={"flex flex-row items-center justify-between gap-3 px-4 lg:px-20 py-2.5 min-h-16 lg:min-h-20"}>
-               <div className={"flex flex-row items-center justify-start space-x-3 min-w-0"}>
+               <div className={"flex flex-row items-center justify-start gap-3 min-w-0"}>
                    <img src={`${import.meta.env.BASE_URL}real_madrid.svg`} alt="logo" className={"h-10 w-10 lg:h-12 lg:w-12 shrink-0"}/>
 
-                   <div className={"flex flex-col text-text-inverse min-w-0"}>
+                   <div className={"hidden min-[380px]:flex flex-col text-text-inverse min-w-0"}>
                        <h1 className={"font-semibold text-lg lg:text-xl pb-0 truncate"}>Madrid Manager</h1>
                        <p className={"uppercase text-xs lg:text-sm text-text-inverse-muted truncate"}>Сезон {season} - Неделя {week}</p>
                    </div>
@@ -42,6 +43,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                <NavBar />
 
                <div className={"flex flex-row items-center gap-2 lg:gap-3 shrink-0"}>
+                   <ConnectionStatus />
                    <div className={"hidden lg:block"}>{statsBox}</div>
                    <Button
                        text={"Перезапуск"}
@@ -50,15 +52,6 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                        variant={"danger"}
                        className={"hidden md:inline-flex"}
                    />
-                   <Button
-                       size={"icon"}
-                       onClick={onRestart}
-                       variant={"danger"}
-                       className={"md:hidden"}
-                       aria-label={"Перезапуск"}
-                   >
-                       <FaRedo />
-                   </Button>
                    <Button
                        text={weekLoading ? "Играем тур…" : fired ? "Начать заново" : seasonOver ? "След. сезон" : "След. неделя"}
                        icon={weekLoading
@@ -75,7 +68,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                        onClick={() => setMenuOpen(open => !open)}
                        aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
                        aria-expanded={menuOpen}
-                       className={"xl:hidden flex items-center justify-center h-10 w-10 rounded-md text-text-inverse hover:bg-primary-800"}
+                       className={"2xl:hidden flex items-center justify-center size-11 rounded-md text-text-inverse hover:bg-primary-800"}
                    >
                        {menuOpen ? <FiX size={24}/> : <FiMenu size={24}/>}
                    </button>
@@ -83,8 +76,18 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
            </div>
 
            {menuOpen && (
-               <div className={"xl:hidden flex flex-col gap-4 px-4 lg:px-20 pb-4 border-t border-secondary/20"}>
+               <div className={"2xl:hidden flex flex-col gap-4 px-4 lg:px-20 pb-4 border-t border-secondary/20"}>
                    <NavBar mobile onNavigate={() => setMenuOpen(false)} />
+                   <Button
+                       text={"Перезапуск"}
+                       icon={<FaRedo />}
+                       onClick={() => {
+                           setMenuOpen(false);
+                           onRestart();
+                       }}
+                       variant={"danger"}
+                       className={"md:hidden self-start"}
+                   />
                    <div className={"lg:hidden"}>{statsBox}</div>
                </div>
            )}

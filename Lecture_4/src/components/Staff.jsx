@@ -1,3 +1,5 @@
+import { cardTable } from "@/lib/cardTable.js";
+
 export function Staff({staff}) {
     const columns = ["Имя Фамилия", "Возраст", "Роль в клубе", "Зарплата/год", "Сила"];
 
@@ -9,25 +11,25 @@ export function Staff({staff}) {
             </div>
 
             <div className={"bg-background-surface shadow-card rounded-lg border border-border w-full overflow-x-auto"}>
-                <table className={"w-full min-w-[720px] text-left"}>
-                    <thead className={"bg-background-muted"}>
+                <table className={cardTable.table}>
+                    <thead className={cardTable.head}>
                         <tr>
                             {columns.map((column) => (
-                                <th key={column} className={"text-text-muted text-xs uppercase tracking-wide font-bold px-4 md:px-6 py-4"}>{column}</th>
+                                <th key={column} className={"text-text-muted text-xs uppercase tracking-wide font-bold px-3 2xl:px-6 py-4"}>{column}</th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={cardTable.body}>
                         {staff.map((person) => (
-                            <tr key={person.id} className={"border-t border-border"}>
-                                <td className={"px-4 md:px-6 py-4"}>
+                            <tr key={person.id} className={cardTable.row}>
+                                <td className={cardTable.plainCell}>
                                     <p className={"text-text-muted text-sm"}>{person.lastName}</p>
                                     <p className={"text-text text-lg font-bold font-display uppercase"}>{person.name}</p>
                                 </td>
-                                <td className={"px-4 md:px-6 py-4 text-text-secondary text-base"}>{person.age} лет</td>
-                                <td className={"px-4 md:px-6 py-4 text-text text-base font-bold"}>{person.role}</td>
-                                <td className={"px-4 md:px-6 py-4 text-text text-lg font-bold"}>{`€ ${person.salary} млн`}</td>
-                                <td className={"px-4 md:px-6 py-4"}>
+                                <td data-label={columns[1]} className={`${cardTable.cell} text-text-secondary text-base`}>{person.age} лет</td>
+                                <td data-label={columns[2]} className={`${cardTable.cell} text-text text-base font-bold`}>{person.role}</td>
+                                <td data-label={columns[3]} className={`${cardTable.cell} text-text text-lg font-bold`}>{`€ ${person.salary} млн`}</td>
+                                <td data-label={columns[4]} className={cardTable.cell}>
                                     <div className={"flex flex-row items-center space-x-3"}>
                                         <p className={"text-text text-2xl font-bold font-display w-10"}>{person.power}</p>
                                         <div className={"h-2 w-32 bg-background-subtle rounded-full"}>

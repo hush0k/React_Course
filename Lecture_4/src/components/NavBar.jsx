@@ -30,7 +30,7 @@ export function NavBar({mobile = false, onNavigate}) {
     return (
         <nav className={mobile
             ? "flex flex-col gap-1 pt-3"
-            : "hidden xl:flex flex-row items-center justify-center gap-4 h-full"}>
+            : "hidden 2xl:flex flex-row items-center justify-center gap-4 h-full"}>
             {links.map((link) => (
                 <NavLink
                     key={link.to}

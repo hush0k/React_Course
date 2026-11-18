@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { RootLayout } from "@/layouts/RootLayout.jsx";
 import { HomePage } from "@/pages/HomePage.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
+import { UpdateBanner } from "@/components/UpdateBanner.jsx";
 
 
 function lazyPage(load, name) {
@@ -19,6 +20,7 @@ const LoginPage = lazyPage(() => import("@/pages/LoginPage.jsx"), "LoginPage");
 const RegisterPage = lazyPage(() => import("@/pages/RegisterPage.jsx"), "RegisterPage");
 const ProfilePage = lazyPage(() => import("@/pages/ProfilePage.jsx"), "ProfilePage");
 const NotFoundPage = lazyPage(() => import("@/pages/NotFoundPage.jsx"), "NotFoundPage");
+const OfflinePage = lazyPage(() => import("@/pages/OfflinePage.jsx"), "OfflinePage");
 
 function RequireAuth({children}) {
     const {isAuthenticated, loading} = useAuth();
@@ -28,22 +30,26 @@ function RequireAuth({children}) {
 
 function App() {
     return (
-        <Routes>
-            <Route path="login" element={<Suspense fallback={null}><LoginPage /></Suspense>} />
-            <Route path="signup" element={<Suspense fallback={null}><RegisterPage /></Suspense>} />
-            <Route path="register" element={<Navigate to={"/signup"} replace />} />
-            <Route element={<RequireAuth><RootLayout /></RequireAuth>}>
-                <Route index element={<HomePage />} />
-                <Route path="team" element={<TeamPage />} />
-                <Route path="academy" element={<AcademyPage />} />
-                <Route path="stadium" element={<StadiumPage />} />
-                <Route path="market" element={<MarketPage />} />
-                <Route path="player/:id" element={<PlayerPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="history" element={<HistoryPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-            </Route>
-        </Routes>
+        <>
+            <Routes>
+                <Route path="login" element={<Suspense fallback={null}><LoginPage /></Suspense>} />
+                <Route path="signup" element={<Suspense fallback={null}><RegisterPage /></Suspense>} />
+                <Route path="register" element={<Navigate to={"/signup"} replace />} />
+                <Route path="offline" element={<Suspense fallback={null}><OfflinePage /></Suspense>} />
+                <Route element={<RequireAuth><RootLayout /></RequireAuth>}>
+                    <Route index element={<HomePage />} />
+                    <Route path="team" element={<TeamPage />} />
+                    <Route path="academy" element={<AcademyPage />} />
+                    <Route path="stadium" element={<StadiumPage />} />
+                    <Route path="market" element={<MarketPage />} />
+                    <Route path="player/:id" element={<PlayerPage />} />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="history" element={<HistoryPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Route>
+            </Routes>
+            <UpdateBanner />
+        </>
     );
 }
 

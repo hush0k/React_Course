@@ -4,6 +4,7 @@ import { FiChevronLeft, FiChevronRight, FiSearch, FiX } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { usePlayersQuery } from "@/hooks/queries.js";
 import { getBlockReason, getRank, positionGroups } from "@/lib/players.js";
+import { cardTable } from "@/lib/cardTable.js";
 
 const PAGE_SIZE = 10;
 const SEARCH_DELAY = 300;
@@ -222,22 +223,22 @@ export function Market({players, finances, onBuy}) {
             </div>
 
             <div className={`bg-background-surface shadow-card rounded-lg border border-border w-full overflow-x-auto transition-opacity ${loading ? "opacity-50" : ""}`}>
-                <table className={"w-full min-w-[960px] text-left"}>
-                    <thead className={"bg-background-muted"}>
+                <table className={cardTable.table}>
+                    <thead className={cardTable.head}>
                         <tr>
                             {columns.map((column) => (
-                                <th key={column} className={"text-text-muted text-xs uppercase tracking-wide font-bold px-6 py-4"}>{column}</th>
+                                <th key={column} className={"text-text-muted text-xs uppercase tracking-wide font-bold px-3 2xl:px-6 py-4"}>{column}</th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className={cardTable.body}>
                         {pagePlayers.map((player) => {
                             const rank = getRank(player.power);
                             const blockReason = getBlockReason(player, finances);
 
                             return (
-                                <tr key={player.id} className={"border-t border-border"}>
-                                    <td className={"px-6 py-4"}>
+                                <tr key={player.id} className={cardTable.row}>
+                                    <td className={cardTable.plainCell}>
                                         <Link to={`/player/${player.id}`} className={"group flex flex-row items-center space-x-4"}>
                                             <img
                                                 src={player.imgUrl}
@@ -251,34 +252,34 @@ export function Market({players, finances, onBuy}) {
                                             </div>
                                         </Link>
                                     </td>
-                                    <td className={"px-6 py-4"}>
+                                    <td data-label={columns[1]} className={cardTable.cell}>
                                         <p className={"text-text text-base font-bold"}>{player.club}</p>
                                         <p className={"text-text-muted text-sm"}>{player.league}</p>
                                     </td>
-                                    <td className={"px-6 py-4 text-text text-base font-bold"}>{player.position}</td>
-                                    <td className={"px-6 py-4 text-text-secondary text-base"}>{player.age} лет</td>
-                                    <td className={"px-6 py-4"}>
+                                    <td data-label={columns[2]} className={`${cardTable.cell} text-text text-base font-bold`}>{player.position}</td>
+                                    <td data-label={columns[3]} className={`${cardTable.cell} text-text-secondary text-base`}>{player.age} лет</td>
+                                    <td data-label={columns[4]} className={cardTable.cell}>
                                         <span className={`rounded-md px-2 py-1 text-xs font-bold uppercase whitespace-nowrap ${rank.className}`}>{rank.label}</span>
                                     </td>
-                                    <td className={"px-6 py-4"}>
+                                    <td data-label={columns[5]} className={cardTable.cell}>
                                         <div className={"flex flex-row items-center space-x-3"}>
                                             <p className={"text-text text-2xl font-bold font-display w-10"}>{player.power}</p>
-                                            <div className={"h-2 w-24 bg-background-subtle rounded-full"}>
+                                            <div className={"h-2 w-16 2xl:w-24 bg-background-subtle rounded-full"}>
                                                 <div className={"h-full bg-secondary rounded-full"} style={{width: `${player.power}%`}}></div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className={"px-6 py-4 text-text text-lg font-bold whitespace-nowrap"}>{`€ ${player.price} млн`}</td>
-                                    <td className={"px-6 py-4 text-text text-lg font-bold whitespace-nowrap"}>{`€ ${player.salary} млн`}</td>
-                                    <td className={"px-6 py-4"}>
-                                        <div className={"flex flex-col items-end space-y-1"}>
+                                    <td data-label={columns[6]} className={`${cardTable.cell} text-text text-lg font-bold whitespace-nowrap`}>{`€ ${player.price} млн`}</td>
+                                    <td data-label={columns[7]} className={`${cardTable.cell} text-text text-lg font-bold whitespace-nowrap`}>{`€ ${player.salary} млн`}</td>
+                                    <td className={cardTable.plainCell}>
+                                        <div className={"flex flex-col items-end space-y-1 max-xl:items-stretch"}>
                                             <Button
                                                 text={"Купить"}
                                                 size={"sm"}
                                                 disabled={blockReason !== null}
                                                 onClick={() => onBuy(player)}
                                             />
-                                            {blockReason && <p className={"text-danger text-xs whitespace-nowrap"}>{blockReason}</p>}
+                                            {blockReason && <p className={"text-danger text-xs text-right"}>{blockReason}</p>}
                                         </div>
                                     </td>
                                 </tr>
@@ -286,7 +287,7 @@ export function Market({players, finances, onBuy}) {
                         })}
                         {failed && (
                             <tr>
-                                <td colSpan={columns.length} className={"px-6 py-12 text-center"}>
+                                <td colSpan={columns.length} className={"px-6 py-12 text-center max-xl:col-span-2"}>
                                     <div className={"flex flex-col items-center gap-3"}>
                                         <p className={"text-danger text-base font-bold"}>Не удалось загрузить игроков рынка. Проверьте соединение и попробуйте ещё раз.</p>
                                         <Button text={"Повторить"} size={"sm"} variant={"outline"} onClick={() => refetch()} />
@@ -296,7 +297,7 @@ export function Market({players, finances, onBuy}) {
                         )}
                         {!loading && !failed && pagePlayers.length === 0 && (
                             <tr>
-                                <td colSpan={columns.length} className={"px-6 py-12 text-center text-text-muted text-base"}>
+                                <td colSpan={columns.length} className={"px-6 py-12 text-center text-text-muted text-base max-xl:col-span-2"}>
                                     {search ? `По запросу «${search}» игроков нет` : "По этому фильтру игроков нет"}
                                 </td>
                             </tr>
