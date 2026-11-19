@@ -68,7 +68,7 @@ function PowerBadge({power, className}) {
 function MatchTeam({team, nameFirst, v}) {
     return (
         <div className={cn("flex flex-col items-center gap-2 flex-1 min-w-0 md:flex-none md:gap-10", nameFirst ? "md:flex-row" : "md:flex-row-reverse")}>
-            <h2 className={`order-last md:order-none text-center md:text-left break-words font-bold text-lg md:text-4xl xl:text-6xl md:w-min ${v.teamName}`}>{team.name}</h2>
+            <h2 className={`order-last md:order-none text-center md:text-left break-words font-bold text-lg md:text-4xl 2xl:text-6xl md:w-min ${v.teamName}`}>{team.name}</h2>
             <div className={"flex flex-col items-center gap-2 w-14 md:w-20 shrink-0"}>
                 <img src={team.imgUrl} alt="" />
                 <PowerBadge power={team.power} className={v.power}/>
@@ -110,7 +110,7 @@ export function NextMatch({enemyTeam, side, competition, stage, round, leg, date
     const v = competition === "laliga" ? variants.laLiga : variants.leagueOfChampions;
 
     return (
-        <div className={`flex flex-col 2xl:flex-row items-center justify-between gap-8 p-4 sm:p-6 md:p-10 w-full rounded-lg border ${v.card}`}>
+        <div className={`flex flex-col xl:flex-row items-center justify-between gap-8 p-4 sm:p-6 md:p-10 w-full rounded-lg border ${v.card}`}>
             <div className={"flex flex-col space-y-2"}>
                 <p className={`uppercase font-bold text-sm px-3 py-1 tracking-wide rounded-sm ${v.badge}`}>Следующий матч</p>
                 <p className={v.title}>{competitionTitle(competition, stage, round, leg)}</p>

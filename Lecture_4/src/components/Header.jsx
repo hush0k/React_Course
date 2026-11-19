@@ -30,7 +30,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
 
     return (
        <div className={"sticky top-0 z-50 w-full bg-primary border-b-3 border-b-secondary"}>
-           <div className={"flex flex-row items-center justify-between gap-3 px-4 lg:px-20 py-2.5 min-h-16 lg:min-h-20"}>
+           <div className={"flex flex-row items-center justify-between gap-3 px-4 lg:px-6 min-[1420px]:px-10 min-[1800px]:px-20 py-2.5 min-h-16 lg:min-h-20"}>
                <div className={"flex flex-row items-center justify-start gap-3 min-w-0"}>
                    <img src={`${import.meta.env.BASE_URL}real_madrid.svg`} alt="logo" className={"h-10 w-10 lg:h-12 lg:w-12 shrink-0"}/>
 
@@ -44,7 +44,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
 
                <div className={"flex flex-row items-center gap-2 lg:gap-3 shrink-0"}>
                    <ConnectionStatus />
-                   <div className={"hidden lg:block"}>{statsBox}</div>
+                   <div className={"hidden min-[1800px]:block"}>{statsBox}</div>
                    <Button
                        text={"Перезапуск"}
                        icon={<FaRedo />}
@@ -68,7 +68,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                        onClick={() => setMenuOpen(open => !open)}
                        aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
                        aria-expanded={menuOpen}
-                       className={"2xl:hidden flex items-center justify-center size-11 rounded-md text-text-inverse hover:bg-primary-800"}
+                       className={"min-[1420px]:hidden flex items-center justify-center size-11 rounded-md text-text-inverse hover:bg-primary-800"}
                    >
                        {menuOpen ? <FiX size={24}/> : <FiMenu size={24}/>}
                    </button>
@@ -76,7 +76,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
            </div>
 
            {menuOpen && (
-               <div className={"2xl:hidden flex flex-col gap-4 px-4 lg:px-20 pb-4 border-t border-secondary/20"}>
+               <div className={"min-[1420px]:hidden flex flex-col gap-4 px-4 lg:px-6 pb-4 border-t border-secondary/20"}>
                    <NavBar mobile onNavigate={() => setMenuOpen(false)} />
                    <Button
                        text={"Перезапуск"}
@@ -88,7 +88,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                        variant={"danger"}
                        className={"md:hidden self-start"}
                    />
-                   <div className={"lg:hidden"}>{statsBox}</div>
+                   {statsBox}
                </div>
            )}
        </div>
