@@ -46,7 +46,7 @@ export function Header({season, week, weekIncrement, weekLoading, onNextSeason, 
                    <img src={`${import.meta.env.BASE_URL}real_madrid.svg`} alt="logo" className={"h-10 w-10 lg:h-12 lg:w-12 shrink-0"}/>
 
                    <div className={"hidden min-[380px]:flex flex-col text-text-inverse min-w-0"}>
-                       <h1 className={"font-semibold text-lg lg:text-xl pb-0 truncate"}>Madrid Manager</h1>
+                       <h1 className={"font-semibold text-lg lg:text-xl pb-0 truncate"}>Real Madrid Manager</h1>
                        <p className={"uppercase text-xs lg:text-sm text-text-inverse-muted truncate"}>Сезон {season} - Неделя {week}</p>
                    </div>
                </div>
