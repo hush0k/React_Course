@@ -178,21 +178,28 @@ export async function post(url, body) {
 }
 
 export async function fetchAll() {
-    const financeData = await getJson("/finance");
-    const squadData = await getJson("/player?status=squad");
-    const marketData = await getJson("/player?status=market");
-    const staffData = await getJson("/coach");
-    const clubsData = await getJson("/team");
-    const upgradesData = await getJson("/stadium/upgrades");
-    const nextWeekData = await getJson("/season/next-week");
-    const standingsData = await getJson("/season/standings");
-    const laligaSchedule = await getJson("/season/schedule?competition=laliga");
-    const championsSchedule = await getJson("/season/schedule?competition=champions_league");
-    const championsStandingsData = await getJson("/league-of-champions/standings");
-    const playoffData = await getJson("/league-of-champions/playoff");
-    const objectivesData = await getJson("/objectives");
-    const historyData = (await getJson("/season/history")) ?? [];
-    const powerData = await getJson("/game-engine/team-power");
+    const [
+        financeData, squadData, marketData, staffData, clubsData, upgradesData,
+        nextWeekData, standingsData, laligaSchedule, championsSchedule,
+        championsStandingsData, playoffData, objectivesData, historyRaw, powerData,
+    ] = await Promise.all([
+        getJson("/finance"),
+        getJson("/player?status=squad"),
+        getJson("/player?status=market"),
+        getJson("/coach"),
+        getJson("/team"),
+        getJson("/stadium/upgrades"),
+        getJson("/season/next-week"),
+        getJson("/season/standings"),
+        getJson("/season/schedule?competition=laliga"),
+        getJson("/season/schedule?competition=champions_league"),
+        getJson("/league-of-champions/standings"),
+        getJson("/league-of-champions/playoff"),
+        getJson("/objectives"),
+        getJson("/season/history"),
+        getJson("/game-engine/team-power"),
+    ]);
+    const historyData = historyRaw ?? [];
     const upcomingMatches = await Promise.all((nextWeekData?.matches ?? []).map(async match => ({
         ...match,
         enemy: toTeam(match.enemy),
