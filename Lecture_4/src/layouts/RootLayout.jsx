@@ -65,7 +65,7 @@ export function RootLayout() {
                 <Outlet context={game} />
             </Suspense>
             {game.seasonResult && !game.seasonResultClosed && (
-                <SeasonResult result={game.seasonResult} stats={game.stats} onNext={game.nextSeason} onClose={game.closeSeasonResult} />
+                <SeasonResult result={game.seasonResult} stats={game.stats} onNext={game.nextSeason} loading={game.seasonLoading} onClose={game.closeSeasonResult} />
             )}
             {game.restartConfirmOpen && (
                 <ConfirmDialog

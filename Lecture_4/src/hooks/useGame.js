@@ -25,6 +25,7 @@ export function useGame() {
     const [loadAttempt, setLoadAttempt] = useState(0);
     const [actionError, setActionError] = useState(null);
     const [weekLoading, setWeekLoading] = useState(false);
+    const [seasonLoading, setSeasonLoading] = useState(false);
 
     function applyData(data) {
         setFinance(data.finance);
@@ -138,11 +139,28 @@ export function useGame() {
         });
     }
 
-    const upgradeStadium = async id => {
-        const result = await post(`/stadium/upgrades/${id}/level-up`);
-        if (!result.ok) setActionError(result.error);
-        await loadAll();
-    };
+    function upgradeStadium(id) {
+        runAction(`/stadium/upgrades/${id}/level-up`, () => {
+            const upgrade = upgrades.find(item => item.id === id);
+            if (!upgrade || upgrade.level >= upgrade.maxLevel) return;
+            const round = value => Math.round(value * 100) / 100;
+            const multiplier = round(upgrade.multiplier + upgrade.multiplierStep);
+            const ratio = upgrade.multiplier ? multiplier / upgrade.multiplier : 1;
+            setUpgrades(prev => prev.map(item => item.id === id
+                ? {...item, level: item.level + 1, multiplier, price: item.price + (item.priceStep ?? 0)}
+                : item));
+            // бонусы пересчитываются на сервере, тут грубая оценка до синхронизации
+            setFinance(prev => prev && ({
+                ...prev,
+                available_budget: prev.available_budget - upgrade.price,
+                ...(upgrade.type === "income" && {
+                    income_bonus: round(prev.income_bonus * ratio),
+                    win_reward: round(prev.win_reward * ratio),
+                }),
+                ...(upgrade.type === "fans" && {fans_bonus: round(prev.fans_bonus * ratio)}),
+            }));
+        });
+    }
 
     async function nextWeek() {
         if (seasonOver || weekLoading) return;
@@ -175,28 +193,34 @@ export function useGame() {
     }
 
     async function nextSeason() {
-        if (finance.season_status === "lose") {
-            await restartGame();
-            return;
-        }
-
-        for (const url of ["/season/finish", "/season/reset"]) {
-            const result = await post(url);
-            if (!result.ok) {
-                setActionError(result.error);
+        if (seasonLoading) return;
+        setSeasonLoading(true);
+        try {
+            if (finance.season_status === "lose") {
+                await restartGame();
                 return;
             }
+
+            for (const url of ["/season/finish", "/season/reset"]) {
+                const result = await post(url);
+                if (!result.ok) {
+                    setActionError(result.error);
+                    return;
+                }
+            }
+            setSeasonResultClosed(false);
+            setAcademyVersion(v => v + 1);
+            await loadAll();
+        } finally {
+            setSeasonLoading(false);
         }
-        setSeasonResultClosed(false);
-        setAcademyVersion(v => v + 1);
-        await loadAll();
     }
 
     return {
         finance, squad, market, staff, upgrades, upcoming, matches, standings, stats,
         season, objectives, power, trophies, academyVersion, date, seasonOver, seasonResult,
         upcomingMatches: upcoming?.matches ?? [],
-        loadError, actionError, weekLoading, restartConfirmOpen, seasonResultClosed,
+        loadError, actionError, weekLoading, seasonLoading, restartConfirmOpen, seasonResultClosed,
         retryLoad,
         clearActionError: () => setActionError(null),
         openRestartConfirm: () => setRestartConfirmOpen(true),

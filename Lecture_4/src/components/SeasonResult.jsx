@@ -6,7 +6,7 @@ const results = {
     finished: {label: "Сезон завершён", text: "Ни триумфа, ни провала - сезон окончен.", className: "text-text-inverse"},
 };
 
-export function SeasonResult({result, stats, onNext, onClose}) {
+export function SeasonResult({result, stats, onNext, onClose, loading}) {
     const info = results[result];
 
     return (
@@ -22,7 +22,7 @@ export function SeasonResult({result, stats, onNext, onClose}) {
                     <p><b className={"text-4xl font-display"}>{stats.losses}</b><br/>поражений</p>
                 </div>
 
-                <Button text={result === "lose" ? "Начать заново" : "Начать новый сезон"} variant={"secondary"} size={"lg"} onClick={onNext} />
+                <Button text={loading ? "Загрузка…" : result === "lose" ? "Начать заново" : "Начать новый сезон"} variant={"secondary"} size={"lg"} onClick={onNext} disabled={loading} aria-busy={loading} />
             </div>
         </div>
     )
