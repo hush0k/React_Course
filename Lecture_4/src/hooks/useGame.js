@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInvalidateGameData } from "@/hooks/queries.js";
 import { fetchAll, getWeekDate, playRound, post } from "@/services/service.js";
+import { ACADEMY, lineUps } from "@/lib/players.js";
 
 export function useGame() {
     const invalidateGameData = useInvalidateGameData();
@@ -74,16 +75,74 @@ export function useGame() {
     const seasonResult = finance && finance.season_status !== "in_progress" ? finance.season_status : null;
     const date = upcoming ? getWeekDate(upcoming.week) : null;
 
-    async function runAction(url) {
-        const result = await post(url);
-        if (!result.ok) setActionError(result.error);
-        await loadAll();
+    // Оптимистичные действия: UI меняется сразу, запрос уходит в фоне.
+    // Запросы идут по очереди, а полная синхронизация — один раз, когда очередь опустела.
+    const queue = useRef(Promise.resolve());
+    const pending = useRef(0);
+
+    function runAction(url, optimistic) {
+        optimistic?.();
+        pending.current += 1;
+        queue.current = queue.current.then(async () => {
+            let failed = false;
+            try {
+                const result = await post(url);
+                if (!result.ok) {
+                    failed = true;
+                    setActionError(result.error);
+                }
+            } finally {
+                pending.current -= 1;
+            }
+            // при ошибке откатываем оптимистичное изменение данными сервера
+            if (failed || pending.current === 0) await loadAll();
+        });
     }
 
-    const sellPlayer = id => runAction(`/player/${id}/sell`);
-    const buyPlayer = player => runAction(`/player/${player.id}/buy`);
-    const promotePlayer = id => runAction(`/player/${id}/promote`);
-    const upgradeStadium = id => runAction(`/stadium/upgrades/${id}/level-up`);
+    function sellPlayer(id) {
+        runAction(`/player/${id}/sell`, () => {
+            const player = squad.find(item => item.id === id);
+            if (!player) return;
+            setSquad(prev => prev.filter(item => item.id !== id));
+            setMarket(prev => [{...player, status: "market"}, ...prev]);
+            setFinance(prev => prev && ({
+                ...prev,
+                available_budget: prev.available_budget + player.price,
+                all_salary: prev.all_salary - player.salary,
+            }));
+        });
+    }
+
+    function buyPlayer(player) {
+        runAction(`/player/${player.id}/buy`, () => {
+            setMarket(prev => prev.filter(item => item.id !== player.id));
+            setSquad(prev => [...prev, {...player, status: "squad"}]);
+            setFinance(prev => prev && ({
+                ...prev,
+                available_budget: prev.available_budget - player.price - player.salary,
+                effective_transfer_left: prev.effective_transfer_left - player.price,
+                all_salary: prev.all_salary + player.salary,
+            }));
+        });
+    }
+
+    function promotePlayer(id) {
+        runAction(`/player/${id}/promote`, () => {
+            setSquad(prev => prev.map(item => {
+                if (item.id !== id) return item;
+                // воспитанник уходит в основу, остальные идут по кругу статусов
+                const roster = lineUps.filter(name => name !== ACADEMY);
+                const next = item.lineUp === ACADEMY ? roster[0] : roster[(roster.indexOf(item.lineUp) + 1) % roster.length];
+                return {...item, lineUp: next, line_up: next};
+            }));
+        });
+    }
+
+    const upgradeStadium = async id => {
+        const result = await post(`/stadium/upgrades/${id}/level-up`);
+        if (!result.ok) setActionError(result.error);
+        await loadAll();
+    };
 
     async function nextWeek() {
         if (seasonOver || weekLoading) return;
