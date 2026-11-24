@@ -8,6 +8,14 @@ const updateServiceWorker = registerSW({
         updateAvailable = true;
         listeners.forEach((listener) => listener());
     },
+    onRegisteredSW(url, registration) {
+        if (!registration) return;
+        const check = () => registration.update();
+        setInterval(check, 5 * 60 * 1000);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") check();
+        });
+    },
 });
 
 export function subscribeToUpdate(listener) {
