@@ -4,7 +4,7 @@ import { FiUserPlus } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { GoogleButton } from "@/components/GoogleButton.jsx";
 import { AuthCard, AuthError, AuthField } from "@/components/AuthCard.jsx";
-import { useAuth } from "@/context/AuthContext.jsx";
+import { useAuth } from "@/context/authContext.js";
 import { validatePassword, validateUsername } from "@/services/authValidation.js";
 
 export function RegisterPage() {

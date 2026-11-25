@@ -44,7 +44,6 @@ function decodeBase64Url(part) {
     );
 }
 
-/** Декодирует payload JWT без проверки подписи (подпись проверяет сервер). */
 export function decodeToken(token) {
     try {
         return JSON.parse(decodeBase64Url(token.split(".")[1]));

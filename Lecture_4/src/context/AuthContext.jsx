@@ -1,10 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AuthContext } from "@/context/authContext.js";
 import { useDispatch } from "react-redux";
 import { resetStore } from "@/store/actions.js";
 import { login as apiLogin, loginWithGoogle, register as apiRegister } from "@/services/service.js";
 import { clearToken, decodeToken, getToken } from "@/services/token.js";
 
-const AuthContext = createContext(null);
 
 function readUser() {
     const token = getToken();
@@ -66,10 +66,4 @@ export function AuthProvider({children}) {
     }), [user, loading, error, finish, dispatch]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error("useAuth must be used inside AuthProvider");
-    return context;
 }

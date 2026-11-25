@@ -4,7 +4,8 @@ import player from "@/store/playerSlice.js";
 import academy from "@/store/academySlice.js";
 import history from "@/store/historySlice.js";
 import publicData from "@/store/publicDataSlice.js";
+import game from "@/store/gameSlice.js";
 
 export const store = configureStore({
-    reducer: {market, player, academy, history, publicData},
+    reducer: {market, player, academy, history, publicData, game},
 });

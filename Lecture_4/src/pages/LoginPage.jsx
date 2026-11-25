@@ -4,7 +4,7 @@ import { FiLock } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { GoogleButton } from "@/components/GoogleButton.jsx";
 import { AuthCard, AuthError, AuthField } from "@/components/AuthCard.jsx";
-import { useAuth } from "@/context/AuthContext.jsx";
+import { useAuth } from "@/context/authContext.js";
 
 export function LoginPage() {
     const navigate = useNavigate();

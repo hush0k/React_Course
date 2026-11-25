@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { RootLayout } from "@/layouts/RootLayout.jsx";
 import { HomePage } from "@/pages/HomePage.jsx";
-import { useAuth } from "@/context/AuthContext.jsx";
+import { useAuth } from "@/context/authContext.js";
 import { UpdateBanner } from "@/components/UpdateBanner.jsx";
 
 

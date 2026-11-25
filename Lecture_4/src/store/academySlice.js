@@ -22,7 +22,11 @@ const initialState = {
     academy: null,
     status: "idle",
     currentRequestId: null,
+    mutationStatus: "idle",
+    mutationError: null,
 };
+
+const mutationThunks = [promoteYouth, changeTraining];
 
 const academySlice = createSlice({
     name: "academy",
@@ -44,6 +48,21 @@ const academySlice = createSlice({
                 state.status = "failed";
             })
             .addCase(resetStore, () => initialState);
+
+        for (const thunk of mutationThunks) {
+            builder
+                .addCase(thunk.pending, state => {
+                    state.mutationStatus = "loading";
+                    state.mutationError = null;
+                })
+                .addCase(thunk.fulfilled, state => {
+                    state.mutationStatus = "succeeded";
+                })
+                .addCase(thunk.rejected, (state, action) => {
+                    state.mutationStatus = "failed";
+                    state.mutationError = action.payload ?? "Не удалось выполнить действие";
+                });
+        }
     },
 });
 

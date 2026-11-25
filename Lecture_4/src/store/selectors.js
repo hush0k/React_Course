@@ -1,5 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { getPositionGroup } from "@/lib/players.js";
+import { getWeekDate } from "@/services/service.js";
 
 export const PAGE_SIZE = 10;
 
@@ -29,4 +30,26 @@ export const selectSimilarPlayers = createSelector(
             .sort((a, b) => Math.abs(a.power - player.power) - Math.abs(b.power - player.power))
             .slice(0, 4);
     },
+);
+
+export const selectGame = state => state.game;
+
+export const selectSeasonOver = createSelector(
+    [state => state.game.finance, state => state.game.upcoming],
+    (finance, upcoming) => (finance ? finance.season_status !== "in_progress" || !upcoming : false),
+);
+
+export const selectSeasonResult = createSelector(
+    [state => state.game.finance],
+    finance => (finance && finance.season_status !== "in_progress" ? finance.season_status : null),
+);
+
+export const selectGameDate = createSelector(
+    [state => state.game.upcoming],
+    upcoming => (upcoming ? getWeekDate(upcoming.week) : null),
+);
+
+export const selectUpcomingMatches = createSelector(
+    [state => state.game.upcoming],
+    upcoming => upcoming?.matches ?? [],
 );

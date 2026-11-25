@@ -96,16 +96,20 @@ src/
 
 | Слайс | Файл | Состояние |
 | --- | --- | --- |
-| `history` | `historySlice.js` | `seasons`, `status`, `error` |
-| `publicData` | `publicDataSlice.js` | `data` (таблица и рынок из кэша), `status`, `error` |
-| `player` | `playerSlice.js` | `player`, `status`, `error` |
-| `market` | `marketSlice.js` | `players`, `total`, `status`, `error` |
-| `academy` | `academySlice.js` | `youth`, `status`, `error` |
+| `game` | `gameSlice.js` | данные игры (`finance`, `squad`, `market`, `staff`, `upgrades`, `upcoming`, `matches`, `standings`, `stats`, `season`, `objectives`, `power`, `trophies`), `status`, `currentRequestId`, `loadError`, `actionError`, `weekLoading`, `seasonLoading` |
+| `history` | `historySlice.js` | `seasons`, `status`, `currentRequestId` |
+| `publicData` | `publicDataSlice.js` | `data` (таблица и рынок из кэша), `status` |
+| `player` | `playerSlice.js` | `id`, `player`, `status` |
+| `market` | `marketSlice.js` | `players`, `total`, `params`, `status` |
+| `academy` | `academySlice.js` | `academy`, `status`, `currentRequestId`, `mutationStatus`, `mutationError` |
+
+Локальный UI-стейт (диалоги, поля форм, `restartConfirmOpen`, `seasonResultClosed`) остаётся в компонентах, авторизация — в `AuthContext`. Хук `useGame` — тонкая обёртка над `useSelector` / `useDispatch`.
 
 ### Thunks (`createAsyncThunk`)
 
 | Thunk | Тип | Назначение |
 | --- | --- | --- |
+| `loadGame` | список | все данные игры; после успеха диспатчит `refreshAll` |
 | `loadMarket` | список | рынок: поиск, фильтры, сортировка, страница |
 | `loadAcademy` | список | воспитанники академии |
 | `loadHistory` | список | итоги прошлых сезонов |
@@ -113,17 +117,26 @@ src/
 | `loadPlayer` | детали | игрок по `id` |
 | `promoteYouth` | мутация | перевод воспитанника в основной состав |
 | `changeTraining` | мутация | смена тренировки воспитанника |
-| `refreshAll` | обновление | перезагрузка `market`, `player`, `academy`, `history` |
+| `runQueuedAction` | мутация | покупка/продажа/повышение/улучшение стадиона: очередь запросов, синхронизация один раз после очереди |
+| `nextWeek`, `nextSeason`, `restartGame` | мутация | ход недели, новый сезон, перезапуск игры |
+| `refreshAll` | обновление | перезагрузка открытых `market`, `player`, `academy`, `history` |
 
-Каждый thunk обрабатывается в `extraReducers` (`pending` / `fulfilled` / `rejected`).
+Оптимистичные изменения (`optimisticSell`, `optimisticBuy`, `optimisticPromote`, `optimisticUpgrade`) применяются в reducers сразу; при ошибке данные откатываются повторным `loadGame`.
+
+Каждый thunk обрабатывается в `extraReducers` (`pending` / `fulfilled` / `rejected`): для `loadGame`, `loadMarket` и т. п. — статус и данные, для мутаций — `mutationStatus` / `mutationError` (`academy`) или `actionError`, `weekLoading`, `seasonLoading` (`game`). `refreshAll` — составной thunk без собственного состояния, он диспатчит перечисленные load-thunks.
 
 ### Селекторы (`src/store/selectors.js`)
 
 | Селектор | Мемоизация | Назначение |
 | --- | --- | --- |
 | `selectMarketStatus` | нет | статус загрузки рынка |
+| `selectGame` | нет | состояние слайса `game` |
 | `selectMarketView` | `createSelector` | игроки, страницы и признак «пусто» для рынка |
 | `selectSimilarPlayers` | `createSelector` | похожие игроки на странице игрока |
+| `selectSeasonOver` | `createSelector` | сезон завершён |
+| `selectSeasonResult` | `createSelector` | итог сезона (`win` / `lose` / ...) |
+| `selectGameDate` | `createSelector` | дата ближайшего тура |
+| `selectUpcomingMatches` | `createSelector` | матчи ближайшего тура |
 
 ### Защита от устаревших ответов
 
@@ -132,7 +145,7 @@ src/
 ### Состояния и обновление данных
 
 - На каждой странице обрабатываются loading / error / empty; при ошибке кнопка «Повторить» заново вызывает thunk.
-- После любой мутации (покупка/продажа, повышение из академии, создание игрока, тренировки, улучшение стадиона, следующая неделя, новый сезон, перезапуск) вызывается `loadAll()` из `useGame`, который в конце диспатчит `refreshAll()`.
+- После любой мутации (покупка/продажа, повышение из академии, создание игрока, тренировки, улучшение стадиона, следующая неделя, новый сезон, перезапуск) диспатчится `loadGame`: он один раз перезагружает данные игры и затем через `refreshAll` — только уже открытые срезы (без дублирующих запросов).
 - При входе и выходе диспатчится `resetStore`, и все слайсы возвращаются в начальное состояние.
 
 ## Деплой
