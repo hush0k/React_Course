@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
+import { resetStore } from "@/store/actions.js";
 import { login as apiLogin, loginWithGoogle, register as apiRegister } from "@/services/service.js";
 import { clearToken, decodeToken, getToken } from "@/services/token.js";
 
 const AuthContext = createContext(null);
 
-// Пользователь строится из JWT: sub — UID, username/email/name — отображаемое имя
 function readUser() {
     const token = getToken();
     if (!token) return null;
@@ -22,12 +22,11 @@ function readUser() {
 }
 
 export function AuthProvider({children}) {
-    const queryClient = useQueryClient();
+    const dispatch = useDispatch();
     const [user, setUser] = useState(readUser); // сессия восстанавливается синхронно из токена
     const [loading] = useState(false);
     const [error, setError] = useState(null);
 
-    // 401 из сервисов или другая вкладка очистили токен — синхронизируем состояние
     useEffect(() => {
         const sync = () => setUser(readUser());
         window.addEventListener("storage", sync);
@@ -45,10 +44,10 @@ export function AuthProvider({children}) {
             setError(result.error);
             return result;
         }
-        queryClient.clear();
+        dispatch(resetStore());
         setUser(readUser());
         return result;
-    }, [queryClient]);
+    }, [dispatch]);
 
     const value = useMemo(() => ({
         user,
@@ -61,15 +60,14 @@ export function AuthProvider({children}) {
         loginWithGoogle: credential => finish(() => loginWithGoogle(credential)),
         logout() {
             clearToken();
-            queryClient.clear();
+            dispatch(resetStore());
             setUser(null);
         },
-    }), [user, loading, error, finish, queryClient]);
+    }), [user, loading, error, finish, dispatch]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const context = useContext(AuthContext);
     if (!context) throw new Error("useAuth must be used inside AuthProvider");

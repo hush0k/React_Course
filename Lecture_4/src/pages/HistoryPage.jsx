@@ -1,9 +1,18 @@
 import { ClubHistory } from "@/components/ClubHistory.jsx";
 import { Button } from "@/components/Button.jsx";
-import { useSeasonHistoryQuery } from "@/hooks/queries.js";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loadHistory } from "@/store/historySlice.js";
 
 export function HistoryPage() {
-    const {data: seasons = [], isPending, isError, refetch} = useSeasonHistoryQuery();
+    const dispatch = useDispatch();
+    const {seasons, status} = useSelector(state => state.history);
+    const isPending = status === "idle" || status === "loading";
+    const isError = status === "failed";
+
+    useEffect(() => {
+        dispatch(loadHistory());
+    }, [dispatch]);
 
     if (isPending) {
         return (
@@ -18,7 +27,7 @@ export function HistoryPage() {
         return (
             <div className={"container flex flex-col items-center justify-center gap-4 py-24 text-center"}>
                 <p className={"text-danger text-base font-bold"}>Не удалось загрузить историю клуба. Проверьте соединение и попробуйте ещё раз.</p>
-                <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => refetch()} />
+                <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => dispatch(loadHistory())} />
             </div>
         );
     }

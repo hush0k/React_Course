@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { FiChevronLeft, FiChevronRight, FiSearch, FiX } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
-import { usePlayersQuery } from "@/hooks/queries.js";
+import { loadMarket } from "@/store/marketSlice.js";
+import { PAGE_SIZE, selectMarketStatus, selectMarketView } from "@/store/selectors.js";
 import { getBlockReason, getRank, positionGroups } from "@/lib/players.js";
 import { cardTable } from "@/lib/cardTable.js";
 
-const PAGE_SIZE = 10;
 const SEARCH_DELAY = 300;
 
 const filters = [
@@ -114,29 +115,25 @@ export function Market({players, finances, onBuy}) {
         limit: PAGE_SIZE + 1,
         offset: (page - 1) * PAGE_SIZE,
     };
-    const {data, isFetching, isError, isPlaceholderData, refetch} = usePlayersQuery(params);
-    const loading = isFetching && (isPlaceholderData || !data);
-    const failed = isError && !data;
-    const found = data?.players ?? [];
+    const dispatch = useDispatch();
+    const paramsKey = JSON.stringify(params);
 
-    // пустая страница не на первой позиции — возвращаемся на предыдущую
     useEffect(() => {
-        if (data && !isPlaceholderData && found.length === 0 && params.offset > 0) {
+        dispatch(loadMarket(JSON.parse(paramsKey)));
+    }, [dispatch, paramsKey]);
+
+    const status = useSelector(selectMarketStatus);
+    const loadedKey = useSelector(state => JSON.stringify(state.market.params));
+    const loading = status === "loading";
+    const failed = status === "failed";
+    const {pagePlayers, total, totalPages, firstShown, lastShown} = useSelector(state => selectMarketView(state, page));
+
+    useEffect(() => {
+        if (status === "succeeded" && loadedKey === paramsKey && pagePlayers.length === 0 && params.offset > 0) {
             const prevPage = Math.max(1, Math.ceil(params.offset / PAGE_SIZE));
             setSearchParams(prev => withParams(prev, {page: prevPage}), {replace: true});
         }
-    }, [data, isPlaceholderData, found.length, params.offset, setSearchParams]);
-
-    const result = {
-        total: data?.total ?? null,
-        hasNext: found.length > PAGE_SIZE,
-    };
-    const pagePlayers = found.slice(0, PAGE_SIZE);
-    const totalPages = result.total !== null
-        ? Math.max(1, Math.ceil(result.total / PAGE_SIZE))
-        : page + (result.hasNext ? 1 : 0);
-    const firstShown = pagePlayers.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-    const lastShown = (page - 1) * PAGE_SIZE + pagePlayers.length;
+    }, [status, loadedKey, paramsKey, pagePlayers.length, params.offset, setSearchParams]);
 
     const changeFilter = id => updateParams({filter: id, page: null});
     const changeSort = id => updateParams({sort: id, page: null});
@@ -216,8 +213,8 @@ export function Market({players, finances, onBuy}) {
 
                 <p className={"text-text-secondary text-sm"}>
                     Показано: {firstShown}–{lastShown}
-                    {result.total !== null && ` из ${result.total}`}
-                    {result.total !== null && result.total !== players.length && ` (всего на рынке ${players.length})`}
+                    {total !== null && ` из ${total}`}
+                    {total !== null && total !== players.length && ` (всего на рынке ${players.length})`}
                     {loading && " · загрузка…"}
                 </p>
             </div>
@@ -290,7 +287,7 @@ export function Market({players, finances, onBuy}) {
                                 <td colSpan={columns.length} className={"px-6 py-12 text-center max-xl:col-span-2"}>
                                     <div className={"flex flex-col items-center gap-3"}>
                                         <p className={"text-danger text-base font-bold"}>Не удалось загрузить игроков рынка. Проверьте соединение и попробуйте ещё раз.</p>
-                                        <Button text={"Повторить"} size={"sm"} variant={"outline"} onClick={() => refetch()} />
+                                        <Button text={"Повторить"} size={"sm"} variant={"outline"} onClick={() => dispatch(loadMarket(params))} />
                                     </div>
                                 </td>
                             </tr>

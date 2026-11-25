@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useOutletContext } from "react-router-dom";
 import { FiCheckCircle, FiPlus, FiAlertTriangle } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { cn } from "@/lib/utils";
-import { createPlayer, promote, setTraining } from "@/services/service.js";
-import { useAcademyQuery } from "@/hooks/queries.js";
+import { createPlayer } from "@/services/service.js";
+import { changeTraining, loadAcademy, promoteYouth } from "@/store/academySlice.js";
 import { ACADEMY, getTrainingWeight, nations, positionNames, trainings } from "@/lib/players.js";
 
 const TRAINING_CYCLE = 3;
@@ -259,17 +260,18 @@ function CreateForm({squad, academy, onCreated}) {
 }
 
 function YouthRow({player, academy, onChanged}) {
+    const dispatch = useDispatch();
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState(null);
     const progress = Math.min(100, player.training_progress ?? 0);
     const week = Math.min(TRAINING_CYCLE, (player.training_weeks ?? 0) + 1);
 
-    async function run(action) {
+    async function run(thunk) {
         setBusy(true);
         setError(null);
-        const result = await action();
+        const result = await dispatch(thunk);
         setBusy(false);
-        if (!result.ok) setError(result.error);
+        if (result.error) setError(result.payload ?? "Не удалось выполнить действие");
         else onChanged();
     }
 
@@ -296,7 +298,7 @@ function YouthRow({player, academy, onChanged}) {
                 <label className={"flex flex-col gap-1.5"}>
                     <span className={labelClass}>Тренировка</span>
                     <select className={inputClass} value={player.training ?? "Без тренировок"} disabled={busy}
-                            onChange={event => run(() => setTraining(player.id, event.target.value))}>
+                            onChange={event => run(changeTraining({id: player.id, training: event.target.value}))}>
                         {trainings.map(item => (
                             <option key={item.id} value={item.id} disabled={overLimit(item.id, player.training, academy)}>
                                 {item.label} · вес {item.weight}
@@ -323,18 +325,23 @@ function YouthRow({player, academy, onChanged}) {
             {error && <p className={"text-danger text-sm font-bold"}>{error}</p>}
 
             <Button text={"Перевести в основу"} variant={"outline"} size={"sm"} disabled={busy}
-                    onClick={() => run(() => promote(player.id))} />
+                    onClick={() => run(promoteYouth(player.id))} />
         </li>
     );
 }
 
 export function AcademyPage() {
     const {squad, loadAll: onChange} = useOutletContext();
-    const {data: academy, isPending: loading, refetch} = useAcademyQuery();
+    const dispatch = useDispatch();
+    const {academy, status} = useSelector(state => state.academy);
+    const loading = status === "idle" || status === "loading";
 
-    // после любого изменения перечитываем и академию, и общие данные клуба
+    useEffect(() => {
+        dispatch(loadAcademy());
+    }, [dispatch]);
+
     function handleChanged() {
-        onChange(); // loadAll инвалидирует кэш академии
+        onChange();
     }
 
     const players = academy?.players ?? [];
@@ -379,7 +386,7 @@ export function AcademyPage() {
                     {!loading && academy === null && (
                         <div className={"flex flex-col items-start gap-3 rounded-lg border border-warning bg-warning/10 p-4"}>
                             <p className={"text-text text-sm"}>Не удалось загрузить академию. Проверьте соединение и попробуйте ещё раз.</p>
-                            <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => refetch()} />
+                            <Button text={"Повторить"} variant={"outline"} size={"sm"} onClick={() => dispatch(loadAcademy())} />
                         </div>
                     )}
 

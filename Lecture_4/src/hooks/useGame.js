@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useInvalidateGameData } from "@/hooks/queries.js";
+import { useDispatch } from "react-redux";
+import { refreshAll } from "@/store/refresh.js";
 import { fetchAll, getWeekDate, playRound, post } from "@/services/service.js";
 import { ACADEMY, lineUps } from "@/lib/players.js";
 
 export function useGame() {
-    const invalidateGameData = useInvalidateGameData();
+    const dispatch = useDispatch();
     const [finance, setFinance] = useState(null);
     const [squad, setSquad] = useState([]);
     const [market, setMarket] = useState([]);
@@ -46,8 +47,7 @@ export function useGame() {
     async function loadAll() {
         try {
             applyData(await fetchAll());
-            // данные изменились на сервере — кэш игроков/академии/истории устарел
-            invalidateGameData();
+            dispatch(refreshAll());
         } catch {
             setActionError("Не удалось обновить данные. Проверьте подключение к серверу");
         }

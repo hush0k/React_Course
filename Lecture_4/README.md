@@ -18,7 +18,7 @@
 
 - React 19
 - React Router 7 (HashRouter)
-- TanStack Query (кэширование запросов)
+- Redux Toolkit + React Redux
 - Vite
 - Tailwind CSS 4
 - ESLint
@@ -54,6 +54,9 @@ npm run deploy    # сборка и публикация на GitHub Pages
 ```
 src/
   services/     запросы к серверу и преобразование данных
+  store/        Redux: слайсы, селекторы, store.js
+  hooks/        useGame — состояние игры и действия
+  context/      AuthContext — авторизация
   components/   переиспользуемые компоненты
   lib/          справочники и вспомогательные функции
   pages/        страницы приложения
@@ -74,7 +77,7 @@ src/
 - `src/context/AuthContext.jsx` — `AuthProvider` и `useAuth()`: `user` (`uid`, `username`), `loading`, `error`, `login`, `signup`, `loginWithGoogle`, `logout`. Сессия восстанавливается из JWT при загрузке и переживает перезагрузку страницы; просроченный токен сбрасывается.
 - Маршруты: `/login`, `/signup`, `/profile` (защищённый, показывает логин и UID из JWT, кнопка выхода). Неавторизованных `RequireAuth` перенаправляет на `/login`.
 - NavBar: гость видит «Войти» / «Регистрация», авторизованный — «Профиль» / «Выйти».
-- При входе, регистрации и выходе кэш запросов очищается, чтобы данные одного пользователя не попали к другому.
+- При входе, регистрации и выходе Redux-стор сбрасывается (`resetStore`), чтобы данные одного пользователя не попали к другому.
 
 ## Переменные окружения
 
@@ -85,24 +88,55 @@ src/
 | `VITE_API_URL` | адрес бэкенда |
 | `VITE_GOOGLE_CLIENT_ID` | публичный Google OAuth client ID |
 
-## Стратегия кэширования
+## Redux Toolkit
 
-Используется TanStack Query (`src/hooks/queries.js`), UI-компоненты не делают `fetch` напрямую.
+Состояние хранится в Redux (`configureStore` + `Provider` в `src/main.jsx`), UI-компоненты используют `useSelector` / `useDispatch` и не делают `fetch` напрямую.
 
-| Ресурс | Ключ | staleTime |
+### Слайсы (`src/store/`)
+
+| Слайс | Файл | Состояние |
 | --- | --- | --- |
-| Список игроков (рынок, фильтры/сортировка/страница) | `["players", params]` | 1 мин |
-| Игрок | `["player", id]` | 1 мин |
-| Академия | `["academy"]` | 30 с |
-| История сезонов | `["history"]` | 5 мин |
+| `history` | `historySlice.js` | `seasons`, `status`, `error` |
+| `publicData` | `publicDataSlice.js` | `data` (таблица и рынок из кэша), `status`, `error` |
+| `player` | `playerSlice.js` | `player`, `status`, `error` |
+| `market` | `marketSlice.js` | `players`, `total`, `status`, `error` |
+| `academy` | `academySlice.js` | `youth`, `status`, `error` |
 
-- `gcTime` — 10 минут, `retry: 1`, `refetchOnWindowFocus` выключен.
-- Параметры фильтров входят в ключ, поэтому каждая комбинация кэшируется отдельно; при смене страницы/фильтра предыдущие данные показываются, пока грузятся новые (`keepPreviousData`).
-- Устаревшие ответы не перезаписывают новые: запросы получают `AbortSignal`, а результат привязан к своему ключу.
-- Состояния loading / error («Повторить» → `refetch`) / empty обрабатываются на каждой странице.
+### Thunks (`createAsyncThunk`)
 
-**Правила инвалидации.** После любой мутации (покупка/продажа, повышение из академии, создание игрока, тренировки, улучшение стадиона, следующая неделя, новый сезон, перезапуск) вызывается `loadAll()` из `useGame`, который инвалидирует ключи `players`, `player`, `academy`, `history`. Выход и вход очищают весь кэш.
+| Thunk | Тип | Назначение |
+| --- | --- | --- |
+| `loadMarket` | список | рынок: поиск, фильтры, сортировка, страница |
+| `loadAcademy` | список | воспитанники академии |
+| `loadHistory` | список | итоги прошлых сезонов |
+| `loadPublicData` | список | сохранённые данные для офлайна |
+| `loadPlayer` | детали | игрок по `id` |
+| `promoteYouth` | мутация | перевод воспитанника в основной состав |
+| `changeTraining` | мутация | смена тренировки воспитанника |
+| `refreshAll` | обновление | перезагрузка `market`, `player`, `academy`, `history` |
+
+Каждый thunk обрабатывается в `extraReducers` (`pending` / `fulfilled` / `rejected`).
+
+### Селекторы (`src/store/selectors.js`)
+
+| Селектор | Мемоизация | Назначение |
+| --- | --- | --- |
+| `selectMarketStatus` | нет | статус загрузки рынка |
+| `selectMarketView` | `createSelector` | игроки, страницы и признак «пусто» для рынка |
+| `selectSimilarPlayers` | `createSelector` | похожие игроки на странице игрока |
+
+### Защита от устаревших ответов
+
+В `pending` слайс запоминает `currentRequestId`; `fulfilled` / `rejected` с другим `requestId` игнорируются. Запросы рынка и игрока дополнительно получают `AbortSignal` и отменяются при новом запросе или уходе со страницы.
+
+### Состояния и обновление данных
+
+- На каждой странице обрабатываются loading / error / empty; при ошибке кнопка «Повторить» заново вызывает thunk.
+- После любой мутации (покупка/продажа, повышение из академии, создание игрока, тренировки, улучшение стадиона, следующая неделя, новый сезон, перезапуск) вызывается `loadAll()` из `useGame`, который в конце диспатчит `refreshAll()`.
+- При входе и выходе диспатчится `resetStore`, и все слайсы возвращаются в начальное состояние.
 
 ## Деплой
 
-https://hush0k.github.io/React_Course/lecture4/
+- Демо: https://hush0k.github.io/React_Course/lecture4/
+
+Параметры поиска и фильтров рынка, debounce, сортировка, пагинация, авторизация, защищённые маршруты, PWA и офлайн-режим сохранены.

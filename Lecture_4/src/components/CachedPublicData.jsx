@@ -1,12 +1,19 @@
 import { TournamentTable } from "@/components/TournamentTable.jsx";
-import { usePublicDataQuery } from "@/hooks/queries.js";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loadPublicData } from "@/store/publicDataSlice.js";
 
 export function CachedPublicData() {
-    const {data, isPending, isError} = usePublicDataQuery();
+    const dispatch = useDispatch();
+    const {data, status} = useSelector(state => state.publicData);
 
-    if (isPending) return null;
+    useEffect(() => {
+        dispatch(loadPublicData());
+    }, [dispatch]);
 
-    if (isError) {
+    if (status === "idle" || status === "loading") return null;
+
+    if (status === "failed") {
         return (
             <p className={"max-w-md pt-6 text-sm text-primary-200"}>
                 Сохранённых данных пока нет. Они появятся после того, как вы откроете игру с интернетом.

@@ -1,8 +1,11 @@
+    import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate, useParams, useOutletContext } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Button } from "@/components/Button.jsx";
 import { cn } from "@/lib/utils";
-import { usePlayerQuery } from "@/hooks/queries.js";
+import { loadPlayer } from "@/store/playerSlice.js";
+import { selectSimilarPlayers } from "@/store/selectors.js";
 import { average, getBlockReason, getFlagUrl, getPositionGroup, getRank, isAcademy, positionNames } from "@/lib/players.js";
 
 const lineUpColors = {
@@ -100,7 +103,18 @@ export function PlayerPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const {data: player, isPending: loading, isError, refetch} = usePlayerQuery(id);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(loadPlayer(id));
+    }, [dispatch, id]);
+
+    const {player, status, id: loadedId} = useSelector(state => state.player);
+    const loading = status === "idle" || status === "loading" || loadedId !== String(id);
+    const isError = status === "failed";
+
+    const pool = player?.status === "squad" ? squad : market;
+    const similar = useSelector(state => selectSimilarPlayers(state, pool));
 
     function goBack(fallback) {
         if (location.key === "default") navigate(fallback);
@@ -119,7 +133,7 @@ export function PlayerPage() {
     if (isError) {
         return (
             <PageMessage title={"Ошибка загрузки"} text={"Не удалось загрузить игрока. Проверьте подключение к серверу"}>
-                <Button text={"Повторить"} variant={"primary"} onClick={() => refetch()} />
+                <Button text={"Повторить"} variant={"primary"} onClick={() => dispatch(loadPlayer(id))} />
                 <Button text={"Назад"} icon={<FiArrowLeft />} variant={"outline"} onClick={() => goBack("/team")} />
             </PageMessage>
         );
@@ -135,7 +149,6 @@ export function PlayerPage() {
     }
 
     const inSquad = player.status === "squad";
-    const pool = inSquad ? squad : market;
     const backLink = inSquad ? "/team" : "/market";
     const rank = getRank(player.power);
     const group = getPositionGroup(player.position);
@@ -144,11 +157,6 @@ export function PlayerPage() {
     const samePosition = [...pool.filter(item => item.position === player.position)].sort((a, b) => b.power - a.power);
     const positionPlace = samePosition.findIndex(item => item.id === player.id) + 1;
     const poolPlace = [...pool].sort((a, b) => b.power - a.power).findIndex(item => item.id === player.id) + 1;
-
-    const similar = pool
-        .filter(item => item.id !== player.id && group?.positions.includes(item.position))
-        .sort((a, b) => Math.abs(a.power - player.power) - Math.abs(b.power - player.power))
-        .slice(0, 4);
 
     const finances = {
         availableBudget: finance.available_budget,
